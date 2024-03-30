@@ -29,6 +29,7 @@ export default class TripPresenter {
     const destination = destinationModel.get(this.points[0]);
     console.log(destination);
     console.log(this.points[0]);
+    console.log(offers);
     render(new FormView(this.points[0], offers, destination), this.pointsListComponent.getElement(), RenderPosition.AFTERBEGIN);
   };
 }

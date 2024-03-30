@@ -1,5 +1,5 @@
 const createPicture = ({ src, description }) => `
-  <img class="event__photo" src=${src} alt=${description}>;
+  <img class="event__photo" src=${src} alt=${description}>
 `;
 
 export const createFormDestinationTemplate = ({ description, name, pictures }) => `

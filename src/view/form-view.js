@@ -4,7 +4,7 @@ import { getDueDate } from '../util.js';
 import { createFormOffersTemplate } from './form-offers-template.js';
 import { createFormDestinationTemplate } from './form-destination-template.js';
 
-const createFormViewTemplate = ({ basePrice, type, dateFrom, dateTo }, offers, destination) => `
+const createFormViewTemplate = ({ id, basePrice, type, dateFrom, dateTo }, offers, destination) => `
 <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -122,7 +122,7 @@ const createFormViewTemplate = ({ basePrice, type, dateFrom, dateTo }, offers, d
     </button>
   </header>
       <section class="event__details">
-        ${createFormOffersTemplate(offers)}
+        ${createFormOffersTemplate(id, offers)}
 
         ${createFormDestinationTemplate(destination)}
       </section>
