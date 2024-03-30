@@ -1,18 +1,9 @@
-import { getRandomValue, getRandomInteger } from '../util.js';
+import { getRandomValue, getArr } from '../util.js';
 
 import { CITYS, DESCRIPTIONS, PHOTOS } from './const.js';
 
-const getArr = (arr) => {
-  const newArr = [];
-  const stringCount = getRandomInteger(1, 3);
-  for (let i = 0; i < stringCount; i++) {
-    newArr.push(getRandomValue(arr));
-  }
-  return newArr;
-};
-
-export const generateDestination = () => ({
-  description: getArr(DESCRIPTIONS),
+const generateDestination = () => ({
+  description: getArr(DESCRIPTIONS).join('. '),
   name: getRandomValue(CITYS),
   pictures: getArr(PHOTOS)
 });

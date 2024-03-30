@@ -17,8 +17,8 @@ export default class TripPresenter {
     this.destinationModel = destinationModel;
 
     this.points = [...pointsModel.get()];
-    this.offers = [...offersModel.get()];
-    this.destination = [...destinationModel.get()];
+    const offers = [...offersModel.get(this.points[0])];
+    const destination = [...destinationModel.get(this.points[0])];
 
     render(this.sortComponent, this.container);
     render(this.pointsListComponent, this.container);
@@ -27,6 +27,6 @@ export default class TripPresenter {
       render(new PointView(this.points[i - 1]), this.pointsListComponent.getElement());
     }
 
-    render(new FormView(this.points[0], this.offers[0], this.destination[0]), this.pointsListComponent.getElement());
+    render(new FormView(this.points[0], offers, destination), this.pointsListComponent.getElement());
   };
 }

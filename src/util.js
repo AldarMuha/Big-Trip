@@ -10,6 +10,16 @@ const getRandomInteger = (a = 0, b = 1) => {
 const getRandomValue = (items) =>
   items[getRandomInteger(0, items.length - 1)];
 
+
+const getArr = (arr) => {
+  const newArr = [];
+  const stringCount = getRandomInteger(1, 3);
+  for (let i = 0; i < stringCount; i++) {
+    newArr.push(getRandomValue(arr));
+  }
+  return newArr;
+};
+
 const getTodayDay = () => dayjs().format('MMM D');
 
 const getTimeDueDate = (dueDate) => dayjs(dueDate).format('HH:mm');
@@ -28,4 +38,4 @@ const differenceDate = (d1, d2) => {
 
 const getDueDate = (dueDate) => dayjs(dueDate).format('YY/MM/DD HH:mm');
 
-export { getRandomInteger, getRandomValue, getTodayDay, getTimeDueDate, differenceDate, getDueDate };
+export { getRandomInteger, getRandomValue, getTodayDay, getTimeDueDate, differenceDate, getDueDate, getArr };

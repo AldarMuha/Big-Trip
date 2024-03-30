@@ -1,12 +1,12 @@
-import { getRandomValue, getRandomInteger } from '../util.js';
-import { generateOffer } from './offers.js';
+import { getRandomValue, getRandomInteger, getArr } from '../util.js';
+import { generateOffers } from './offers.js';
 import { generateDestinations } from './destination.js';
 
 import { POINTS_BY_TYPE } from './const.js';
 
 const generatePoint = () => ({
   destination: getRandomValue(generateDestinations()),
-  offers: Array.from({ length: 2 }, generateOffer),
+  offers: getArr(generateOffers()),
   basePrice: getRandomInteger(1, 99),
   dateFrom: '2019-07-10T22:55:56.845Z',
   dateTo: '2019-07-11T11:22:13.375Z',

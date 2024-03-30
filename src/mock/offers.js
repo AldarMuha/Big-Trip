@@ -3,7 +3,7 @@ const generateOffer = () => ({
   price: 120
 });
 
-const generateOffers = () =>
+export const generateOffers = () =>
   Array.from({ length: 10 }, (_, index) => {
     const offerItem = generateOffer();
 
@@ -12,6 +12,3 @@ const generateOffers = () =>
       ...offerItem,
     };
   });
-
-
-export { generateOffer, generateOffers };
