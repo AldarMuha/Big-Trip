@@ -25,6 +25,12 @@ console.log(generatePoints());
 console.log(generateDestinations());
 console.log(generateOffers());
 
+const points = [...pointsModel.get(0)];
+
+console.log(pointsModel.get());
+console.log(destinationModel.get(points[0]));
+console.log(offersModel.get(points[0]));
+
 render(new FilterView(), filterContainer);
 
 tripPresenter.init(eventsContainer, pointsModel, offersModel, destinationModel);

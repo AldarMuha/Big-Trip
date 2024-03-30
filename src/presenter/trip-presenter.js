@@ -3,7 +3,7 @@ import PointsListView from '../view/points-list-view.js';
 import PointView from '../view/point-view.js';
 import FormView from '../view/form-view.js';
 
-import { render } from '../render.js';
+import { render, RenderPosition } from '../render.js';
 
 export default class TripPresenter {
   sortComponent = new SortView();
@@ -17,16 +17,18 @@ export default class TripPresenter {
     this.destinationModel = destinationModel;
 
     this.points = [...pointsModel.get()];
-    const offers = [...offersModel.get(this.points[0])];
-    const destination = [...destinationModel.get(this.points[0])];
 
     render(this.sortComponent, this.container);
     render(this.pointsListComponent, this.container);
 
-    for (let i = 1; i < 4; i++) {
-      render(new PointView(this.points[i - 1]), this.pointsListComponent.getElement());
+    for (let i = 0; i < 3; i++) {
+      render(new PointView(this.points[i]), this.pointsListComponent.getElement());
     }
 
-    render(new FormView(this.points[0], offers, destination), this.pointsListComponent.getElement());
+    const offers = offersModel.get(this.points[0]);
+    const destination = destinationModel.get(this.points[0]);
+    console.log(destination);
+    console.log(this.points[0]);
+    render(new FormView(this.points[0], offers, destination), this.pointsListComponent.getElement(), RenderPosition.AFTERBEGIN);
   };
 }

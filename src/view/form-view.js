@@ -138,7 +138,7 @@ export default class FormView {
   }
 
   getTemplate() {
-    return createFormViewTemplate(this.points, this.destination, this.offers);
+    return createFormViewTemplate(this.points, this.offers, this.destination);
   }
 
   getElement() {
