@@ -6,30 +6,32 @@ import FormView from '../view/form-view.js';
 import { render, RenderPosition } from '../render.js';
 
 export default class TripPresenter {
-  sortComponent = new SortView();
-  pointsListComponent = new PointsListView();
-  formComponent = new FormView();
+  #container = null;
+  #pointsModel = null;
+  #offersModel = null;
+  #destinationModel = null;
+  #sortComponent = new SortView();
+  #pointsListComponent = new PointsListView();
+  #formComponent = new FormView();
+  #points = [];
 
   init = (container, pointsModel, offersModel, destinationModel) => {
-    this.container = container;
-    this.pointsModel = pointsModel;
-    this.offersModel = offersModel;
-    this.destinationModel = destinationModel;
+    this.#container = container;
+    this.#pointsModel = pointsModel;
+    this.#offersModel = offersModel;
+    this.#destinationModel = destinationModel;
 
-    this.points = [...pointsModel.get()];
+    this.#points = [...this.#pointsModel.points];
 
-    render(this.sortComponent, this.container);
-    render(this.pointsListComponent, this.container);
+    render(this.#sortComponent, this.#container);
+    render(this.#pointsListComponent, this.#container);
 
     for (let i = 0; i < 3; i++) {
-      render(new PointView(this.points[i]), this.pointsListComponent.getElement());
+      render(new PointView(this.#points[i]), this.#pointsListComponent.element);
     }
 
-    const offers = offersModel.get(this.points[0]);
-    const destination = destinationModel.get(this.points[0]);
-    console.log(destination);
-    console.log(this.points[0]);
-    console.log(offers);
-    render(new FormView(this.points[0], offers, destination), this.pointsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+    const offers = offersModel.get(this.#points[0]);
+    const destination = destinationModel.get(this.#points[0]);
+    render(new FormView(this.#points[0], offers, destination), this.#pointsListComponent.element, RenderPosition.AFTERBEGIN);
   };
 }

@@ -1,17 +1,13 @@
 import { generateOffers } from '../mock/offers.js';
 
 export default class OffersModel {
-  allOffers = generateOffers();
-  offers = [];
+  #allOffers = generateOffers();
+  #offers = [];
 
   get = (point) => {
-    this.allOffers.map((allOffer) => {
-      if (allOffer.type === point.type) {
-        this.offers.push(allOffer);
-      }
-      return allOffer;
-    });
+    const pointOffers = point.offers;
+    this.#offers = pointOffers.map((pointOffer) => this.#allOffers.find((offer) => offer.type === pointOffer.type));
 
-    return this.offers;
+    return this.#offers;
   };
 }
