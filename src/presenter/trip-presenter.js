@@ -12,7 +12,6 @@ export default class TripPresenter {
   #destinationModel = null;
   #sortComponent = new SortView();
   #pointsListComponent = new PointsListView();
-  #formComponent = new FormView();
   #points = [];
 
   init = (container, pointsModel, offersModel, destinationModel) => {
@@ -27,11 +26,35 @@ export default class TripPresenter {
     render(this.#pointsListComponent, this.#container);
 
     for (let i = 0; i < 3; i++) {
-      render(new PointView(this.#points[i]), this.#pointsListComponent.element);
+      this.#renderPoint(this.#points[i]);
     }
+  };
 
-    const offers = offersModel.get(this.#points[0]);
-    const destination = destinationModel.get(this.#points[0]);
-    render(new FormView(this.#points[0], offers, destination), this.#pointsListComponent.element, RenderPosition.AFTERBEGIN);
+  #renderPoint = (point) => {
+    const pointComponent = new PointView(point);
+
+    const replacePointToForm = () => {
+      pointComponent.element.remove();
+      this.#renderForm(point);
+    };
+    const openEditButton = pointComponent.element.querySelector('.event__rollup-btn');
+    openEditButton.addEventListener('click', replacePointToForm);
+
+    render(pointComponent, this.#pointsListComponent.element);
+  };
+
+  #renderForm = (point) => {
+    const offers = this.#offersModel.get(point);
+    const destination = this.#destinationModel.get(point);
+    const formComponent = new FormView(point, offers, destination);
+
+    const saveButton = formComponent.element.querySelector('.event__save-btn');
+    saveButton.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      formComponent.element.remove();
+      this.#renderPoint(point);
+    });
+
+    render(formComponent, this.#pointsListComponent.element);
   };
 }

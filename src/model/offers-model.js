@@ -8,6 +8,10 @@ export default class OffersModel {
     const pointOffers = point.offers;
     this.#offers = pointOffers.map((pointOffer) => this.#allOffers.find((offer) => offer.type === pointOffer.type));
 
-    return this.#offers;
+    if (this.#offers) {
+      return this.#offers;
+    } else {
+      return null;
+    }
   };
 }
