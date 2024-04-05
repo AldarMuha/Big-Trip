@@ -6,8 +6,8 @@ const createPointOfferTemplate = ({ title, price }) => `
     </li>
 `;
 
-export const creatPointOffersTemplate = (offers) => `
+export const creatPointOffersTemplate = (point, offers) => `
   <ul class="event__selected-offers">
-    ${offers.map((offer) => createPointOfferTemplate(offer)).join('')}
+    ${offers.filter((offer) => point.offers.find((pointOffer) => pointOffer.id === offer.id)).map((offer) => createPointOfferTemplate(offer)).join('')}
   </ul>
 `;

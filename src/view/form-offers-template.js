@@ -1,7 +1,7 @@
-const createFormOfferTemplate = (id, offer) => `
+const createFormOfferTemplate = (point, offer) => `
   <div class="event__offer-selector">
     <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox"
-      name="event-offer-luggage" ${(offer.id === id) ? 'checked' : ''}>
+      name="event-offer-luggage" ${point.offers.find((pointOffer) => pointOffer.id === offer.id) ? 'checked' : ''}>
     <label class="event__offer-label" for="event-offer-luggage-1">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
@@ -11,11 +11,11 @@ const createFormOfferTemplate = (id, offer) => `
 `;
 
 
-export const createFormOffersTemplate = (id, offers) =>
+export const createFormOffersTemplate = (point, offers) =>
   `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
     <div class="event__available-offers">
-      ${offers.map((offer) => createFormOfferTemplate(id, offer)).join('')}
+      ${offers.map((offer) => createFormOfferTemplate(point, offer)).join('')}
     </div>
 </section>`;

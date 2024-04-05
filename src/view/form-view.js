@@ -4,15 +4,16 @@ import { getDueDate } from '../util.js';
 import { createFormOffersTemplate } from './form-offers-template.js';
 import { createFormDestinationTemplate } from './form-destination-template.js';
 
-const createFormViewTemplate = ({ id, basePrice, type, dateFrom, dateTo }, offers, destination) => `
+const createFormViewTemplate = (point, offers, destination) => `
 <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
-        <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png"
-          alt="Event type icon">
+        ${(point)
+    ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${point.type}.png" alt="Event type icon">`
+    : ''}
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -54,7 +55,7 @@ const createFormViewTemplate = ({ id, basePrice, type, dateFrom, dateTo }, offer
 
           <div class="event__type-item">
             <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio"
-              name="event-type" value="flight" checked>
+              name="event-type" value="flight">
             <label class="event__type-label  event__type-label--flight"
               for="event-type-flight-1">Flight</label>
           </div>
@@ -85,10 +86,10 @@ const createFormViewTemplate = ({ id, basePrice, type, dateFrom, dateTo }, offer
 
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination-1">
-        ${type}
+        ${(point) ? point.type : ''}
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text"
-        name="event-destination" value=${destination.name} list="destination-list-1">
+        name="event-destination" value='${(point) ? destination.name : ''}' list="destination-list-1">
       <datalist id="destination-list-1">
         <option value="Amsterdam"></option>
         <option value="Geneva"></option>
@@ -99,11 +100,11 @@ const createFormViewTemplate = ({ id, basePrice, type, dateFrom, dateTo }, offer
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
       <input class="event__input  event__input--time" id="event-start-time-1" type="text"
-        name="event-start-time" value=${getDueDate(dateFrom)}>
+        name="event-start-time" value=${(point) ? getDueDate(point.dateFrom) : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
       <input class="event__input  event__input--time" id="event-end-time-1" type="text"
-        name="event-end-time" value=${getDueDate(dateTo)}>
+        name="event-end-time" value=${(point) ? getDueDate(point.dateTo) : ''}>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -112,7 +113,7 @@ const createFormViewTemplate = ({ id, basePrice, type, dateFrom, dateTo }, offer
         &euro;
       </label>
       <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price"
-        value=${basePrice}>
+        value=${(point) ? point.basePrice : ''}>
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -120,11 +121,11 @@ const createFormViewTemplate = ({ id, basePrice, type, dateFrom, dateTo }, offer
     <button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>
     </button>
-  </header>
+    </header>
       <section class="event__details">
-        ${createFormOffersTemplate(id, offers)}
+        ${(point) ? createFormOffersTemplate(point, offers) : ''}
 
-        ${createFormDestinationTemplate(destination)}
+        ${(point) ? createFormDestinationTemplate(destination) : ''}
       </section>
     </form>
   </li>
@@ -132,14 +133,14 @@ const createFormViewTemplate = ({ id, basePrice, type, dateFrom, dateTo }, offer
 
 export default class FormView {
   #element = null;
-  constructor(points, offers, destination) {
-    this.points = points;
+  constructor(point = null, offers = null, destination = null) {
+    this.point = point;
     this.destination = destination;
     this.offers = offers;
   }
 
   get template() {
-    return createFormViewTemplate(this.points, this.offers, this.destination);
+    return createFormViewTemplate(this.point, this.offers, this.destination);
   }
 
   get element() {

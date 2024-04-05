@@ -2,28 +2,28 @@ import { creatPointOffersTemplate } from './point-offers-template.js';
 import { createElement } from '../render.js';
 import { getTodayDay, getTimeDueDate, differenceDate } from '../util.js';
 
-const createPointViewTemplate = ({ basePrice, destination, type, dateFrom, dateTo, offers }) => `
+const createPointViewTemplate = (point, offers, destination) => `
   <li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="2019-03-18">${getTodayDay()}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destination.name}</h3>
+      <h3 class="event__title">${point.type} ${destination.name}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="2019-03-18T10:30">${getTimeDueDate(dateFrom)}</time>
+          <time class="event__start-time" datetime="2019-03-18T10:30">${getTimeDueDate(point.dateFrom)}</time>
           &mdash;
-          <time class="event__end-time" datetime="2019-03-18T11:00">${getTimeDueDate(dateTo)}</time>
+          <time class="event__end-time" datetime="2019-03-18T11:00">${getTimeDueDate(point.dateTo)}</time>
         </p>
-        <p class="event__duration">${differenceDate(dateFrom, dateTo)}</p>
+        <p class="event__duration">${differenceDate(point.dateFrom, point.dateTo)}</p>
       </div>
       <p class="event__price">
-      &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+      &euro;&nbsp;<span class="event__price-value">${point.basePrice}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
 
-      ${creatPointOffersTemplate(offers)}
+      ${creatPointOffersTemplate(point, offers)}
 
       <button class="event__favorite-btn event__favorite-btn--active" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -41,12 +41,14 @@ const createPointViewTemplate = ({ basePrice, destination, type, dateFrom, dateT
 
 export default class PointView {
   #element = null;
-  constructor(point) {
-    this.point = point;
+  constructor(points, offers, destination) {
+    this.points = points;
+    this.destination = destination;
+    this.offers = offers;
   }
 
   get template() {
-    return createPointViewTemplate(this.point);
+    return createPointViewTemplate(this.points, this.offers, this.destination);
   }
 
   get element() {

@@ -21,6 +21,7 @@ const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
 const destinationModel = new DestinationModel();
 
+console.log(generatePoints());
 console.log(generateOffers());
 console.log(offersModel.get(pointsModel.points[0]));
 console.log(destinationModel.get(pointsModel.points[0]));

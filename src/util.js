@@ -13,7 +13,7 @@ const getRandomValue = (items) =>
 
 const getArr = (arr) => {
   const newArr = [];
-  const stringCount = getRandomInteger(1, 3);
+  const stringCount = getRandomInteger(0, 6);
   for (let i = 0; i < stringCount; i++) {
     newArr.push(getRandomValue(arr));
   }

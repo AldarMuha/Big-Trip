@@ -4,6 +4,8 @@ import { generateDestinations } from './destination.js';
 
 import { POINTS_BY_TYPE } from './const.js';
 
+const offers = generateOffers();
+const destinations = generateDestinations();
 
 const generatePoint = () => ({
   destination: getRandomValue(generateDestinations()),
@@ -15,13 +17,20 @@ const generatePoint = () => ({
   type: getRandomValue(POINTS_BY_TYPE)
 });
 
-export const generatePoints = () =>
-  Array.from({ length: 4 }, (_, index) => {
-    const pointItem = generatePoint();
+export const generatePoints = () => {
+  const points = Array.from({ length: 5 }, generatePoint);
 
-    return {
-      id: String(index + 1),
-      ...pointItem,
-    };
-  });
+  const totalOffers = Array.from({ length: offers.length }, (_, index) => String(index + 1));
+  const totalDestinations = Array.from({ length: destinations.length }, (_, index) => String(index + 1));
+
+  const hasDestination = getRandomInteger(0, 1);
+
+  return points.map((point, index) => ({
+    id: String(index + 1),
+    offers: getArr(totalOffers),
+    destination: (hasDestination) ? getRandomValue(totalDestinations) : '',
+    ...point,
+  }));
+};
+
 

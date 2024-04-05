@@ -5,13 +5,7 @@ export default class OffersModel {
   #offers = [];
 
   get = (point) => {
-    const pointOffers = point.offers;
-    this.#offers = pointOffers.map((pointOffer) => this.#allOffers.find((offer) => offer.type === pointOffer.type));
-
-    if (this.#offers) {
-      return this.#offers;
-    } else {
-      return null;
-    }
+    this.#offers = this.#allOffers.filter((offer) => offer.type === point.type);
+    return this.#offers;
   };
 }
