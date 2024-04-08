@@ -4,7 +4,7 @@ import PointView from '../view/point-view.js';
 import FormView from '../view/form-view.js';
 
 
-import { render, RenderPosition } from '../render.js';
+import { render, RenderPosition } from '../framework/render.js';
 
 export default class TripPresenter {
   #container = null;
@@ -44,27 +44,30 @@ export default class TripPresenter {
       this.#pointsListComponent.element.replaceChild(formComponent.element, pointComponent.element);
     };
 
-    const replaceFormToPoint = (evt) => {
-      this.#points.map(() => replacePointToForm());
-      evt.preventDefault();
+    const replaceFormToPoint = () => {
       this.#pointsListComponent.element.replaceChild(pointComponent.element, formComponent.element);
     };
 
     const onEscKeyDown = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
-        replaceFormToPoint(evt);
+        replaceFormToPoint();
         document.removeEventListener('keydown', onEscKeyDown);
       }
     };
 
-    const openEditButton = pointComponent.element.querySelector('.event__rollup-btn');
-    openEditButton.addEventListener('click', () => {
+    pointComponent.setEditClickHandler(() => {
       replacePointToForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    const saveButton = formComponent.element.querySelector('.event__save-btn');
-    saveButton.addEventListener('click', replaceFormToPoint);
+    // const openEditButton = pointComponent.element.querySelector('.event__rollup-btn');
+
+
+    //const saveButton = formComponent.element.querySelector('.event__save-btn');
+    formComponent.setFormSubmitHandler(() => {
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
 
     render(pointComponent, this.#pointsListComponent.element);
   };

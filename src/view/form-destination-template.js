@@ -14,4 +14,3 @@ export const createFormDestinationTemplate = ({ description, name, pictures }) =
     </div>
   </section>
 `;
-

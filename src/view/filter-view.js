@@ -1,41 +1,34 @@
-import { createElement } from '../render.js';
+import { AbstractView } from '../framework/view/abstract-view.js';
+import { filter } from '../utils/filter.js';
 
-const createFilterViewTemplate = () => `
-  <form class="trip-filters" action="#" method="get">
+const createFilterItemTemplate = (filterItem, isChecked) => {
+  const { name } = filterItem;
+
+  return (`
     <div class="trip-filters__filter">
-      <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything">
-      <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
+      <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden"
+        type="radio" name="trip-filter" value=${name}
+        ${isChecked ? 'checked' : ''}
+      >
+      <label class="trip-filters__filter-label" for="filter-everything">${name}</label>
     </div>
+  `);
+};
 
-    <div class="trip-filters__filter">
-      <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future">
-      <label class="trip-filters__filter-label" for="filter-future">Future</label>
-    </div>
+const createFilterTemplate = (filterItems) => {
+  const filterItemsTemplate = filterItems.map((filterItem) => createFilterItemTemplate(filterItem)).join('');
 
-    <div class="trip-filters__filter">
-      <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past" checked>
-      <label class="trip-filters__filter-label" for="filter-past">Past</label>
-    </div>
+  return `
+    <form class="trip-filters" action="#" method="get">
+      ${filterItemsTemplate(filter)}
+      <button class="visually-hidden" type="submit">Accept filter</button>
+    </form>
+  `;
+};
 
-    <button class="visually-hidden" type="submit">Accept filter</button>
-  </form>
-`;
-
-export default class FilterEventView {
-  #element = null;
+export default class FilterView extends AbstractView {
+  //#filters = null;
   get template() {
-    return createFilterViewTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
+    return createFilterTemplate();
   }
 }

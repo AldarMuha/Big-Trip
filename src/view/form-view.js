@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDueDate } from '../util.js';
 
 import { createFormOffersTemplate } from './form-offers-template.js';
@@ -131,9 +131,13 @@ const createFormViewTemplate = (point, offers, destination) => `
   </li>
 `;
 
-export default class FormView {
-  #element = null;
+export default class FormView extends AbstractView {
+  #point = null;
+  #destination = null;
+  #offers = null;
+
   constructor(point = null, offers = null, destination = null) {
+    super();
     this.point = point;
     this.destination = destination;
     this.offers = offers;
@@ -143,15 +147,13 @@ export default class FormView {
     return createFormViewTemplate(this.point, this.offers, this.destination);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('.event__save-btn').addEventListener('submit', this.#formSubmitHandler)
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 }
