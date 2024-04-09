@@ -1,5 +1,5 @@
-import { AbstractView } from '../framework/view/abstract-view.js';
-import { filter } from '../utils/filter.js';
+import AbstractView from '../framework/view/abstract-view.js';
+
 
 const createFilterItemTemplate = (filterItem, isChecked) => {
   const { name } = filterItem;
@@ -20,15 +20,21 @@ const createFilterTemplate = (filterItems) => {
 
   return `
     <form class="trip-filters" action="#" method="get">
-      ${filterItemsTemplate(filter)}
+      ${filterItemsTemplate}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>
   `;
 };
 
 export default class FilterView extends AbstractView {
-  //#filters = null;
+  #filters = null;
+
+  constructor(filters) {
+    super();
+    this.#filters = filters;
+  }
+
   get template() {
-    return createFilterTemplate();
+    return createFilterTemplate(this.#filters);
   }
 }

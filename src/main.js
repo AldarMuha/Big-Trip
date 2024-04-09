@@ -1,6 +1,6 @@
 //import ButtonNewEventView from './view/button-new-event-view.js';
 import FilterView from './view/filter-view.js';
-//import { generateFilter } from './mock/filter.js';
+import { generateFilter } from './mock/filter.js';
 import PointsModel from './model/points-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationModel from './model/destination-model.js';
@@ -16,6 +16,6 @@ const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
 const destinationModel = new DestinationModel();
 
-//render(new FilterView(), filterContainer);
+render(new FilterView(generateFilter()), filterContainer);
 
 tripPresenter.init(eventsContainer, pointsModel, offersModel, destinationModel);

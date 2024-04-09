@@ -52,7 +52,7 @@ export default class PointView extends AbstractView {
   }
 
   get template() {
-    return createPointViewTemplate(this.point, this.offers, this.destination);
+    return createPointViewTemplate(this.#point, this.#offers, this.#destination);
   }
 
   setEditClickHandler = (callback) => {

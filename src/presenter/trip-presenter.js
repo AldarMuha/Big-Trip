@@ -4,7 +4,7 @@ import PointView from '../view/point-view.js';
 import FormView from '../view/form-view.js';
 
 
-import { render, RenderPosition } from '../framework/render.js';
+import { render, RenderPosition, replace } from '../framework/render.js';
 
 export default class TripPresenter {
   #container = null;
@@ -41,11 +41,11 @@ export default class TripPresenter {
     const formComponent = new FormView(point, offers, destination);
 
     const replacePointToForm = () => {
-      this.#pointsListComponent.element.replaceChild(formComponent.element, pointComponent.element);
+      replace(formComponent, pointComponent);
     };
 
     const replaceFormToPoint = () => {
-      this.#pointsListComponent.element.replaceChild(pointComponent.element, formComponent.element);
+      replace(pointComponent, formComponent);
     };
 
     const onEscKeyDown = (evt) => {
@@ -60,10 +60,9 @@ export default class TripPresenter {
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    // const openEditButton = pointComponent.element.querySelector('.event__rollup-btn');
-
-
+    //const openEditButton = pointComponent.element.querySelector('.event__rollup-btn');
     //const saveButton = formComponent.element.querySelector('.event__save-btn');
+
     formComponent.setFormSubmitHandler(() => {
       replaceFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
