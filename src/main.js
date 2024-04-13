@@ -10,12 +10,12 @@ import { render } from './framework/render.js';
 const tripPresenter = new TripPresenter();
 
 const filterContainer = document.querySelector('.trip-controls__filters');
-const eventsContainer = document.querySelector('.trip-events');
+const eventsContainer = document.querySelector('main .page-body__container');
 
 const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
 const destinationModel = new DestinationModel();
 
-render(new FilterView(generateFilter()), filterContainer);
+render(new FilterView(generateFilter(pointsModel.points)), filterContainer);
 
 tripPresenter.init(eventsContainer, pointsModel, offersModel, destinationModel);

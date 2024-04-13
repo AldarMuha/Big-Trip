@@ -1,19 +1,29 @@
 import SortView from '../view/sort-view.js';
 import PointsListView from '../view/points-list-view.js';
-import PointView from '../view/point-view.js';
+//import PointView from '../view/point-view.js';
 import FormView from '../view/form-view.js';
+import NoPointsView from '../view/no-points-view.js';
+import BoardView from '../view/board-view.js';
+import PointPresenter from './point-presenter.js';
 
 
-import { render, RenderPosition, replace } from '../framework/render.js';
+import { render, RenderPosition } from '../framework/render.js';
+import { updateItem } from '../util.js';
+
 
 export default class TripPresenter {
   #container = null;
   #pointsModel = null;
   #offersModel = null;
   #destinationModel = null;
+
   #sortComponent = new SortView();
   #pointsListComponent = new PointsListView();
   #buttonComponent = document.querySelector('.trip-main__event-add-btn');
+  #noPointsComponent = new NoPointsView();
+  #boardComponent = new BoardView();
+  #pointPresenter = new Map();
+
   #points = [];
 
   init = (container, pointsModel, offersModel, destinationModel) => {
@@ -24,51 +34,55 @@ export default class TripPresenter {
 
     this.#points = [...this.#pointsModel.points];
 
-    render(this.#sortComponent, this.#container);
-    render(this.#pointsListComponent, this.#container);
-
+    this.#renderBoard();
     this.#renderNewForm();
+  };
 
-    for (let i = 0; i < 5; i++) {
-      this.#renderPoint(this.#points[i]);
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) =>
+      presenter.resetView());
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #renderSort = () => {
+    render(this.#sortComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
+  };
+
+  #renderPoints = () => {
+    this.#points.slice().forEach((point) => this.#renderPoint(point));
+  };
+
+  #renderNoPoints = () => {
+    render(this.#noPointsComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
+  };
+
+  #clearPointsList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
+  };
+
+  #renderPointsList = () => {
+    render(this.#pointsListComponent, this.#boardComponent.element);
+    this.#renderPoints();
+  };
+
+  #renderBoard = () => {
+    render(this.#boardComponent, this.#container);
+    if (!this.#points) {
+      this.#renderNoPoints();
     }
+    this.#renderSort();
+    this.#renderPointsList();
   };
 
   #renderPoint = (point) => {
-    const offers = this.#offersModel.get(point);
-    const destination = this.#destinationModel.get(point);
-    const pointComponent = new PointView(point, offers, destination);
-    const formComponent = new FormView(point, offers, destination);
-
-    const replacePointToForm = () => {
-      replace(formComponent, pointComponent);
-    };
-
-    const replaceFormToPoint = () => {
-      replace(pointComponent, formComponent);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        replaceFormToPoint();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    pointComponent.setEditClickHandler(() => {
-      replacePointToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    //const openEditButton = pointComponent.element.querySelector('.event__rollup-btn');
-    //const saveButton = formComponent.element.querySelector('.event__save-btn');
-
-    formComponent.setFormSubmitHandler(() => {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    render(pointComponent, this.#pointsListComponent.element);
+    const pointPresenter = new PointPresenter(this.#pointsListComponent.element, this.#handlePointChange, this.#handleModeChange);
+    pointPresenter.init(point, this.#offersModel.get(point), this.#destinationModel.get(point));
+    this.#pointPresenter.set(point.id, pointPresenter);
   };
 
   #renderNewForm = () => {

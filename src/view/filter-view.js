@@ -2,13 +2,15 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 
 const createFilterItemTemplate = (filterItem, isChecked) => {
-  const { name } = filterItem;
+  const { name, count } = filterItem;
 
   return (`
     <div class="trip-filters__filter">
       <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden"
-        type="radio" name="trip-filter" value=${name}
+        type="radio" name="trip-filter"
         ${isChecked ? 'checked' : ''}
+        ${count === 0 ? 'disabled' : ''}
+        value=${name}
       >
       <label class="trip-filters__filter-label" for="filter-everything">${name}</label>
     </div>
@@ -16,7 +18,7 @@ const createFilterItemTemplate = (filterItem, isChecked) => {
 };
 
 const createFilterTemplate = (filterItems) => {
-  const filterItemsTemplate = filterItems.map((filterItem) => createFilterItemTemplate(filterItem)).join('');
+  const filterItemsTemplate = filterItems.map((filterItem, index) => createFilterItemTemplate(filterItem, index === 0)).join('');
 
   return `
     <form class="trip-filters" action="#" method="get">

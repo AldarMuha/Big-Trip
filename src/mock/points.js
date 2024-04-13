@@ -1,6 +1,7 @@
 import { getRandomValue, getRandomInteger, getArr } from '../util.js';
 import { generateOffers } from './offers.js';
 import { generateDestinations } from './destination.js';
+import { nanoid } from 'nanoid';
 
 import { POINTS_BY_TYPE } from './const.js';
 
@@ -25,8 +26,8 @@ export const generatePoints = () => {
 
   const hasDestination = getRandomInteger(0, 1);
 
-  return points.map((point, index) => ({
-    id: String(index + 1),
+  return points.map((point) => ({
+    id: nanoid(),
     offers: getArr(totalOffers),
     destination: (hasDestination) ? getRandomValue(totalDestinations) : '',
     ...point,

@@ -10,9 +10,9 @@ dayjs.tz.setDefault();
 
 
 const filter = {
-  [FilterType.EVERYTHING]: (points) => points.filter((point) => point),
-  [FilterType.FUTURE]: (points) => points.filter((point) => today.diff(point.dateFrom, 'minute') >= 0),
-  [FilterType.PAST]: (points) => points.filter((point) => point.dateTo === 1),
+  [FilterType.EVERYTHING]: (points) => [...points],
+  [FilterType.FUTURE]: (points) => points.filter((point) => point.type === 'ship'),
+  [FilterType.PAST]: (points) => points.filter((point) => point.type === 'drive'),
 };
 
 export { filter };

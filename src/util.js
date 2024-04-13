@@ -38,4 +38,18 @@ const differenceDate = (d1, d2) => {
 
 const getDueDate = (dueDate) => dayjs(dueDate).format('YY/MM/DD HH:mm');
 
-export { getRandomInteger, getRandomValue, getTodayDay, getTimeDueDate, differenceDate, getDueDate, getArr };
+const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1),
+  ];
+};
+
+export { getRandomInteger, getRandomValue, getTodayDay, getTimeDueDate, differenceDate, getDueDate, getArr, updateItem };
