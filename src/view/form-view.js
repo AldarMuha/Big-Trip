@@ -136,15 +136,15 @@ export default class FormView extends AbstractView {
   #destination = null;
   #offers = null;
 
-  constructor(point = null, offers = null, destination = null) {
+  constructor(point, offers, destination) {
     super();
-    this.point = point;
-    this.destination = destination;
-    this.offers = offers;
+    this.#point = point;
+    this.#destination = destination;
+    this.#offers = offers;
   }
 
   get template() {
-    return createFormViewTemplate(this.point, this.offers, this.destination);
+    return createFormViewTemplate(this.#point, this.#offers, this.#destination);
   }
 
   setFormSubmitHandler = (callback) => {

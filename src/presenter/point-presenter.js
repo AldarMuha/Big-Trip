@@ -96,8 +96,8 @@ export default class PointPresenter {
     this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
   };
 
-  #formSubmitHandler = () => {
-    //this.#changeData(point);
+  #formSubmitHandler = (point) => {
+    this.#changeData(point);
     this.#replaceFormToPoint();
   };
 }
