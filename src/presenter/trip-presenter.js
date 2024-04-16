@@ -45,7 +45,7 @@ export default class TripPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offersModel.get(updatedPoint), this.#destinationModel.get(updatedPoint));
   };
 
   #renderSort = () => {
@@ -72,11 +72,12 @@ export default class TripPresenter {
 
   #renderBoard = () => {
     render(this.#boardComponent, this.#container);
-    if (!this.#points) {
+    if (this.#points.every((point) => point.isArchive)) {
       this.#renderNoPoints();
+    } else {
+      this.#renderSort();
+      this.#renderPointsList();
     }
-    this.#renderSort();
-    this.#renderPointsList();
   };
 
   #renderPoint = (point) => {

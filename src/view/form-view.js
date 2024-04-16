@@ -4,6 +4,30 @@ import { getDueDate } from '../util.js';
 import { createFormOffersTemplate } from './form-offers-template.js';
 import { createFormDestinationTemplate } from './form-destination-template.js';
 
+const BLANK_POINT = {
+  destination: '',
+  offers: '',
+  basePrice: '',
+  dateFrom: '',
+  dateTo: '',
+  isFavorite: false,
+  type: ''
+};
+
+const BLANK_OFFERS = [
+  {
+    type: '',
+    title: '',
+    price: ''
+  }
+];
+
+const BLANK_DESTINATION = {
+  description: '',
+  name: '',
+  pictures: ''
+};
+
 const createFormViewTemplate = (point, offers, destination) => `
 <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
@@ -11,7 +35,7 @@ const createFormViewTemplate = (point, offers, destination) => `
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
-        ${(point)
+        ${(point.type)
     ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${point.type}.png" alt="Event type icon">`
     : ''}
       </label>
@@ -86,10 +110,10 @@ const createFormViewTemplate = (point, offers, destination) => `
 
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination-1">
-        ${(point) ? point.type : ''}
+        ${point.type}
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text"
-        name="event-destination" value='${(point) ? destination.name : ''}' list="destination-list-1">
+        name="event-destination" value='${destination ? destination.name : ''}' list="destination-list-1">
       <datalist id="destination-list-1">
         <option value="Amsterdam"></option>
         <option value="Geneva"></option>
@@ -100,11 +124,11 @@ const createFormViewTemplate = (point, offers, destination) => `
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
       <input class="event__input  event__input--time" id="event-start-time-1" type="text"
-        name="event-start-time" value='${(point) ? getDueDate(point.dateFrom) : ''}'>
+        name="event-start-time" value='${getDueDate(point.dateFrom)}'>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
       <input class="event__input  event__input--time" id="event-end-time-1" type="text"
-        name="event-end-time" value='${(point) ? getDueDate(point.dateTo) : ''}'>
+        name="event-end-time" value='${getDueDate(point.dateTo)}'>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -113,7 +137,7 @@ const createFormViewTemplate = (point, offers, destination) => `
         &euro;
       </label>
       <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price"
-        value=${(point) ? point.basePrice : ''}>
+        value=${point.basePrice}>
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -123,9 +147,9 @@ const createFormViewTemplate = (point, offers, destination) => `
     </button>
     </header>
       <section class="event__details">
-        ${(point) ? createFormOffersTemplate(point, offers) : ''}
+        ${offers ? createFormOffersTemplate(point, offers) : ''}
 
-        ${(point) ? createFormDestinationTemplate(destination) : ''}
+        ${destination ? createFormDestinationTemplate(destination) : ''}
       </section>
     </form>
   </li>
@@ -136,7 +160,7 @@ export default class FormView extends AbstractView {
   #destination = null;
   #offers = null;
 
-  constructor(point, offers, destination) {
+  constructor(point = BLANK_POINT, offers = null, destination = null) {
     super();
     this.#point = point;
     this.#destination = destination;
