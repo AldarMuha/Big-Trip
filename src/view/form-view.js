@@ -1,8 +1,11 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDueDate } from '../util.js';
 
 import { createFormOffersTemplate } from './form-offers-template.js';
 import { createFormDestinationTemplate } from './form-destination-template.js';
+
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
   destination: '',
@@ -14,21 +17,7 @@ const BLANK_POINT = {
   type: ''
 };
 
-const BLANK_OFFERS = [
-  {
-    type: '',
-    title: '',
-    price: ''
-  }
-];
-
-const BLANK_DESTINATION = {
-  description: '',
-  name: '',
-  pictures: ''
-};
-
-const createFormViewTemplate = (point, offers, destination) => `
+const createFormViewTemplate = ({ point, offers, destination }) => `
 <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -155,29 +144,123 @@ const createFormViewTemplate = (point, offers, destination) => `
   </li>
 `;
 
-export default class FormView extends AbstractView {
-  #point = null;
-  #destination = null;
-  #offers = null;
+export default class FormView extends AbstractStatefulView {
+
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor(point = BLANK_POINT, offers = null, destination = null) {
     super();
-    this.#point = point;
-    this.#destination = destination;
-    this.#offers = offers;
+    this._state = FormView.parsePointToState(point, offers, destination);
+    this.#setDatepicker();
   }
 
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  };
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this._state.point.dateFrom = userDate;
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this._state.point.dateTo = userDate;
+  };
+
+  #setDatepicker = () => {
+    if (this._state.point.dateFrom) {
+      this.#datepickerFrom = flatpickr(
+        this.element.querySelector('[name="event-start-time"]'),
+        {
+          dateFormat: 'y/m/d H:i',
+          defaultDate: this._state.point.dateFrom,
+          onChange: this.#dateFromChangeHandler, // На событие flatpickr передаём наш колбэк
+        },
+      );
+    }
+    if (this._state.point.dateTo) {
+      this.#datepickerTo = flatpickr(
+        this.element.querySelector('[name="event-end-time"]'),
+        {
+          dateFormat: 'y/m/d H:i',
+          defaultDate: this._state.point.dateTo,
+          onChange: this.#dateToChangeHandler,
+        },
+      );
+    }
+  };
+
+  static parsePointToState = (point, offers, destination) => ({
+    point,
+    offers,
+    destination,
+  });
+
+  static parseStateToPoint = (state) => ({
+    ...state.point,
+  });
+
   get template() {
-    return createFormViewTemplate(this.#point, this.#offers, this.#destination);
+    return createFormViewTemplate(this._state);
   }
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+    this.element.querySelector('fieldset.event__type-group').addEventListener('change', (evt) => {
+      this._state.point.type = evt.target.value;
+      this.element.querySelector('.event__type-toggle').checked = false;
+      this.element.querySelector('.event__label').textContent = this._state.point.type;
+      this.element.querySelector('.event__type-icon').src = `img/icons/${this._state.point.type}.png`;
+    });
+    this.element.querySelector('.event__offer-checkbox').addEventListener('change', this.#handleChangeOffers);
+  };
+
+  #handleChangeOffers = (evt) => {
+    console.log(evt.target.type);
+    /*
+        const checkbox = evt.target;
+        const offerLabel = checkbox.closest('.event__offer-selector').querySelector('.event__offer-title').textContent;
+        const offerPrice = checkbox.closest('.event__offer-selector').querySelector('.event__offer-price').textContent;
+        const isSelected = checkbox.checked;
+
+        let currentOffers = Array.isArray(this._state.point.offers) ? [...this._state.point.offers] : [];
+
+        if (isSelected) {
+          currentOffers.push({ title: offerLabel, price: offerPrice });
+        } else {
+          currentOffers = currentOffers.filter((offer) => offer.title !== offerLabel);
+        }
+
+      */
+
+    //this._state.point.of
+  };
+
+  _restoreHandlers = () => {
+    this.#formSubmitHandler(this._callback.formSubmit);
+  };
+
+  #priceInputHandler = (evt) => {
+    evt.preventDefault();
+    this._state.point.basePrice = Number(evt.target.value);
+    this.#setDatepicker();
   };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#point);
+    this._callback.formSubmit(FormView.parseStateToPoint(this._state));
   };
+
 }

@@ -58,4 +58,14 @@ const updateItem = (items, update) => {
   ];
 };
 
-export { getRandomInteger, getRandomValue, getTodayDay, getTimeDueDate, differenceDate, getDueDate, getArr, updateItem };
+
+const sortDay = (pointA, pointB) =>
+  dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+
+const sortTime = (pointA, pointB) =>
+  dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom)) - dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+
+const sortPrice = (pointA, pointB) =>
+  pointA.price - pointB.price;
+
+export { getRandomInteger, getRandomValue, getTodayDay, getTimeDueDate, differenceDate, getDueDate, getArr, updateItem, sortDay, sortTime, sortPrice };

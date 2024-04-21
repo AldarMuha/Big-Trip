@@ -5,10 +5,11 @@ import FormView from '../view/form-view.js';
 import NoPointsView from '../view/no-points-view.js';
 import BoardView from '../view/board-view.js';
 import PointPresenter from './point-presenter.js';
+import { SortType } from '../const.js';
 
 
 import { render, RenderPosition } from '../framework/render.js';
-import { updateItem } from '../util.js';
+import { updateItem, sortDay, sortPrice, sortTime } from '../util.js';
 
 
 export default class TripPresenter {
@@ -23,8 +24,10 @@ export default class TripPresenter {
   #noPointsComponent = new NoPointsView();
   #boardComponent = new BoardView();
   #pointPresenter = new Map();
+  #currentSortType = SortType.DAY;
 
   #points = [];
+  #sourcedPoints = [];
 
   init = (container, pointsModel, offersModel, destinationModel) => {
     this.#container = container;
@@ -33,6 +36,7 @@ export default class TripPresenter {
     this.#destinationModel = destinationModel;
 
     this.#points = [...this.#pointsModel.points];
+    this.#sourcedPoints = [...this.#pointsModel.points];
 
     this.#renderBoard();
     this.#renderNewForm();
@@ -48,8 +52,35 @@ export default class TripPresenter {
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offersModel.get(updatedPoint), this.#destinationModel.get(updatedPoint));
   };
 
+  #sortPoints = (sortType) => {
+    switch (sortType) {
+      case SortType.DAY:
+        this.#points.sort(sortDay);
+        break;
+      case SortType.TIME:
+        this.#points.sort(sortTime);
+        break;
+      case SortType.PRICE:
+        this.#points.sort(sortPrice);
+        break;
+      default:
+        this.#points.sort(sortDay);
+    }
+    this.#currentSortType = sortType;
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#sortPoints(sortType);
+    this.#clearPointsList();
+
+  };
+
   #renderSort = () => {
     render(this.#sortComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
   #renderPoints = () => {
@@ -72,7 +103,7 @@ export default class TripPresenter {
 
   #renderBoard = () => {
     render(this.#boardComponent, this.#container);
-    if (this.#points.every((point) => point.isArchive)) {
+    if (this.#points.every((point) => !point)) {
       this.#renderNoPoints();
     } else {
       this.#renderSort();
