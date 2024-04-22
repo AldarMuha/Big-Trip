@@ -1,6 +1,6 @@
-import dayjs from "dayjs";
-const utc = require('dayjs/plugin/utc');
-const timezone = require('dayjs/plugin/timezone');
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -42,7 +42,7 @@ const differenceDate = (d1, d2) => {
   }
 };
 
-const getDueDate = (dueDate) => dayjs(dueDate).format('YY/MM/DD HH:mm');
+const getDueDate = (dueDate) => dayjs.tz(dueDate).format('YY/MM/DD HH:mm');
 
 const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);

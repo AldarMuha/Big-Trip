@@ -223,29 +223,33 @@ export default class FormView extends AbstractStatefulView {
       this.element.querySelector('.event__type-toggle').checked = false;
       this.element.querySelector('.event__label').textContent = this._state.point.type;
       this.element.querySelector('.event__type-icon').src = `img/icons/${this._state.point.type}.png`;
+      /*
+      this._state.offers = this._state.point.offers.filter((pointOffer) => pointOffer.type === this._state.point.type);
+      console.log(this._state.offers);
+      */
     });
-    this.element.querySelector('.event__offer-checkbox').addEventListener('change', this.#handleChangeOffers);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#handleChangeOffers);
   };
 
   #handleChangeOffers = (evt) => {
-    console.log(evt.target.type);
-    /*
-        const checkbox = evt.target;
-        const offerLabel = checkbox.closest('.event__offer-selector').querySelector('.event__offer-title').textContent;
-        const offerPrice = checkbox.closest('.event__offer-selector').querySelector('.event__offer-price').textContent;
-        const isSelected = checkbox.checked;
 
-        let currentOffers = Array.isArray(this._state.point.offers) ? [...this._state.point.offers] : [];
+    const checkbox = evt.target;
+    const offerLabel = checkbox.closest('.event__offer-selector').querySelector('.event__offer-title').textContent;
+    const offerPrice = checkbox.closest('.event__offer-selector').querySelector('.event__offer-price').textContent;
+    const isSelected = checkbox.checked;
 
-        if (isSelected) {
-          currentOffers.push({ title: offerLabel, price: offerPrice });
-        } else {
-          currentOffers = currentOffers.filter((offer) => offer.title !== offerLabel);
-        }
+    let currentOffers = Array.isArray(this._state.offers) ? [...this._state.offers] : [];
 
-      */
+    if (isSelected) {
+      currentOffers.push({ title: offerLabel, price: offerPrice });
+    } else {
+      currentOffers = currentOffers.filter((offer) => offer.title !== offerLabel);
+    }
 
-    //this._state.point.of
+    //this._state.offers.push(...currentOffers);
+    console.log(currentOffers);
+    console.log(this._state);
+
   };
 
   _restoreHandlers = () => {
