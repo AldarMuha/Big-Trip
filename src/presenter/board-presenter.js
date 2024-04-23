@@ -1,6 +1,5 @@
 import SortView from '../view/sort-view.js';
 import PointsListView from '../view/points-list-view.js';
-//import PointView from '../view/point-view.js';
 import FormView from '../view/form-view.js';
 import NoPointsView from '../view/no-points-view.js';
 import BoardView from '../view/board-view.js';
@@ -12,7 +11,7 @@ import { render, RenderPosition } from '../framework/render.js';
 import { updateItem, sortDay, sortPrice, sortTime } from '../util.js';
 
 
-export default class TripPresenter {
+export default class BoardPresenter {
   #container = null;
   #pointsModel = null;
   #offersModel = null;
@@ -49,6 +48,7 @@ export default class TripPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
+    //this.#sourcedPoints = updatedPoint(this.#sourcedPoints, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offersModel.get(updatedPoint), this.#destinationModel.get(updatedPoint));
   };
 
@@ -64,7 +64,7 @@ export default class TripPresenter {
         this.#points.sort(sortPrice);
         break;
       default:
-        this.#points.sort(sortDay);
+        this.#points = [...this.#sourcedPoints];
     }
     this.#currentSortType = sortType;
   };
@@ -75,7 +75,7 @@ export default class TripPresenter {
     }
     this.#sortPoints(sortType);
     this.#clearPointsList();
-
+    this.#renderPointsList();
   };
 
   #renderSort = () => {

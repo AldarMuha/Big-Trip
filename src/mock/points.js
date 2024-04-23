@@ -1,7 +1,16 @@
-import { getRandomValue, getRandomInteger, getArr } from '../util.js';
+import { getRandomValue, getRandomInteger, getRandomArray } from '../util.js';
 import { generateOffers } from './offers.js';
 import { generateDestinations } from './destination.js';
 import { nanoid } from 'nanoid';
+
+const DATES = [
+  '2019-07-11T22:55:56.845Z',
+  '2019-07-12T22:55:56.845Z',
+  '2019-07-13T22:55:56.845Z',
+  '2019-07-14T22:55:56.845Z',
+  '2019-07-15T22:55:56.845Z',
+  '2019-07-16T22:55:56.845Z',
+];
 
 import { POINTS_BY_TYPE } from './const.js';
 
@@ -10,10 +19,10 @@ const destinations = generateDestinations();
 
 const generatePoint = () => ({
   destination: getRandomValue(generateDestinations()),
-  offers: getArr(generateOffers()),
+  offers: getRandomArray(generateOffers()),
   basePrice: getRandomInteger(1, 99),
-  dateFrom: '2019-07-10T22:55:56.845Z',
-  dateTo: '2019-07-11T11:22:13.375Z',
+  dateFrom: getRandomValue(DATES.slice(0, 3)),
+  dateTo: getRandomValue(DATES.slice(4, 5)),
   isFavorite: false,
   type: getRandomValue(POINTS_BY_TYPE)
 });
@@ -28,7 +37,7 @@ export const generatePoints = () => {
 
   return points.map((point) => ({
     id: nanoid(),
-    offers: getArr(totalOffers),
+    offers: getRandomArray(totalOffers),
     destination: (hasDestination) ? getRandomValue(totalDestinations) : '',
     ...point,
   }));

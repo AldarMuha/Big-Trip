@@ -5,6 +5,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault();
+dayjs().utcOffset(120);
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -17,7 +18,7 @@ const getRandomValue = (items) =>
   items[getRandomInteger(0, items.length - 1)];
 
 
-const getArr = (arr) => {
+const getRandomArray = (arr) => {
   const newArr = [];
   const stringCount = getRandomInteger(0, 6);
   for (let i = 0; i < stringCount; i++) {
@@ -26,23 +27,23 @@ const getArr = (arr) => {
   return newArr;
 };
 
-const getTodayDay = () => dayjs().format('MMM D');
+const getCurrentDate = () => dayjs().format('MMM D');
 
 const getTimeDueDate = (dueDate) => dayjs(dueDate).format('HH:mm');
 
-const differenceDate = (d1, d2) => {
-  const date1 = dayjs(d1);
-  const date2 = dayjs(d2);
-  if (date2.diff(date1, 'day') >= 1) {
-    return dayjs(date2.diff(date1, 'day', true)).format('DD HHН mmМ');
-  } if (date2.diff(date1, 'hour') >= 1) {
-    return dayjs(date2.diff(date1, 'hour', true)).format('HHН mmМ');
-  } if (date2.diff(date1, 'minute') >= 1) {
-    return dayjs(date2.diff(date1, 'minute', true)).format('mmМ');
+const differenceDate = (date1, date2) => {
+  const dateFrom = dayjs(date1);
+  const dateTo = dayjs(date2);
+  if (dateTo.diff(dateFrom, 'day') >= 1) {
+    return dayjs(dateTo.diff(dateFrom, 'day', true)).format('DD HHН mmМ');
+  } if (dateTo.diff(dateFrom, 'hour') >= 1) {
+    return dayjs(dateTo.diff(dateFrom, 'hour', true)).format('HHН mmМ');
+  } if (dateTo.diff(dateFrom, 'minute') >= 1) {
+    return dayjs(dateTo.diff(dateFrom, 'minute', true)).format('mmМ');
   }
 };
 
-const getDueDate = (dueDate) => dayjs.tz(dueDate).format('YY/MM/DD HH:mm');
+const getDueDate = (dueDate) => dayjs.utc(dueDate).utcOffset(3, true).format('YY/MM/DD HH:mm');
 
 const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
@@ -62,10 +63,26 @@ const updateItem = (items, update) => {
 const sortDay = (pointA, pointB) =>
   dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 
-const sortTime = (pointA, pointB) =>
-  dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom)) - dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+function sortTime(a, b) {
+  const duration1 = dayjs(a.dateTo).diff(dayjs(a.dateFrom));
+  const duration2 = dayjs(b.dateTo).diff(dayjs(b.dateFrom));
+  if (duration1 > duration2) {
+    return 1;
+  }
+  if (duration1 < duration2) {
+    return -1;
+  }
+  return 0;
+}
 
-const sortPrice = (pointA, pointB) =>
-  pointA.price - pointB.price;
+function sortPrice(a, b) {
+  if (a.basePrice > b.basePrice) {
+    return 1;
+  }
+  if (a.basePrice < b.basePrice) {
+    return -1;
+  }
+  return 0;
+}
 
-export { getRandomInteger, getRandomValue, getTodayDay, getTimeDueDate, differenceDate, getDueDate, getArr, updateItem, sortDay, sortTime, sortPrice };
+export { getRandomInteger, getRandomValue, getCurrentDate, getTimeDueDate, differenceDate, getDueDate, getRandomArray, updateItem, sortDay, sortTime, sortPrice };

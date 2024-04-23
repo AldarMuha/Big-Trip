@@ -4,10 +4,10 @@ import { generateFilter } from './mock/filter.js';
 import PointsModel from './model/points-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationModel from './model/destination-model.js';
-import TripPresenter from './presenter/trip-presenter.js';
+import BoardPresenter from './presenter/board-presenter.js';
 import { render } from './framework/render.js';
 
-const tripPresenter = new TripPresenter();
+const tripPresenter = new BoardPresenter();
 
 const filterContainer = document.querySelector('.trip-controls__filters');
 const eventsContainer = document.querySelector('main .page-body__container');

@@ -1,11 +1,11 @@
-import { getRandomValue, getArr } from '../util.js';
+import { getRandomValue, getRandomArray } from '../util.js';
 
 import { CITYS, DESCRIPTIONS, PHOTOS } from './const.js';
 
 const generateDestination = () => ({
-  description: getArr(DESCRIPTIONS).join('. '),
+  description: getRandomArray(DESCRIPTIONS).join('. '),
   name: getRandomValue(CITYS),
-  pictures: getArr(PHOTOS)
+  pictures: getRandomArray(PHOTOS)
 });
 
 export const generateDestinations = () => Array.from({ length: 10 }, (_, index) => {
