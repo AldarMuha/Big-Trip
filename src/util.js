@@ -20,14 +20,14 @@ const getRandomValue = (items) =>
 
 const getRandomArray = (arr) => {
   const newArr = [];
-  const stringCount = getRandomInteger(0, 6);
+  const stringCount = getRandomInteger(0, 3);
   for (let i = 0; i < stringCount; i++) {
     newArr.push(getRandomValue(arr));
   }
   return newArr;
 };
 
-const getCurrentDate = () => dayjs().format('MMM D');
+const getDayMonth = (dueDate) => dayjs(dueDate).format('MMM D');
 
 const getTimeDueDate = (dueDate) => dayjs(dueDate).format('HH:mm');
 
@@ -85,4 +85,4 @@ function sortPrice(a, b) {
   return 0;
 }
 
-export { getRandomInteger, getRandomValue, getCurrentDate, getTimeDueDate, differenceDate, getDueDate, getRandomArray, updateItem, sortDay, sortTime, sortPrice };
+export { getRandomInteger, getRandomValue, getDayMonth, getTimeDueDate, differenceDate, getDueDate, getRandomArray, updateItem, sortDay, sortTime, sortPrice };

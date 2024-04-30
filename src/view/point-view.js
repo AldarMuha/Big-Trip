@@ -1,15 +1,15 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { creatPointOffersTemplate } from './point-offers-template.js';
-import { getCurrentDate, getTimeDueDate, differenceDate } from '../util.js';
+import { getDayMonth, getTimeDueDate, differenceDate } from '../util.js';
 
 const createPointViewTemplate = (point, offers, destination) => `
   <li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="2019-03-18">${getCurrentDate()}</time>
+      <time class="event__date" datetime="2019-03-18">${getDayMonth(point.dateFrom)}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${point.type} ${destination.name}</h3>
+      <h3 class="event__title">${point.type} ${destination ? destination.name : ''}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="2019-03-18T10:30">${getTimeDueDate(point.dateFrom)}</time>
@@ -23,7 +23,7 @@ const createPointViewTemplate = (point, offers, destination) => `
       </p>
       <h4 class="visually-hidden">Offers:</h4>
 
-      ${creatPointOffersTemplate(point, offers)}
+      ${offers ? creatPointOffersTemplate(point, offers) : ''}
 
       <button class="event__favorite-btn event__favorite-btn--active" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -44,7 +44,7 @@ export default class PointView extends AbstractView {
   #destination = null;
   #offers = null;
 
-  constructor(point, offers, destination) {
+  constructor(point, offers = null, destination = null) {
     super();
     this.#point = point;
     this.#destination = destination;
@@ -74,5 +74,7 @@ export default class PointView extends AbstractView {
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();
+    //console.log(this.#point);
+    // console.log(this.#offers);
   };
 }

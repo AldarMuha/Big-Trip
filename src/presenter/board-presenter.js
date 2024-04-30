@@ -49,7 +49,7 @@ export default class BoardPresenter {
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
     //this.#sourcedPoints = updatedPoint(this.#sourcedPoints, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offersModel.get(updatedPoint), this.#destinationModel.get(updatedPoint));
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offersModel.getOffersByType(updatedPoint.type), this.#destinationModel.getDestinationByName(updatedPoint.destination.name));
   };
 
   #sortPoints = (sortType) => {
@@ -113,7 +113,7 @@ export default class BoardPresenter {
 
   #renderPoint = (point) => {
     const pointPresenter = new PointPresenter(this.#pointsListComponent.element, this.#handlePointChange, this.#handleModeChange);
-    pointPresenter.init(point, this.#offersModel.get(point), this.#destinationModel.get(point));
+    pointPresenter.init(point, this.#offersModel.getOffersByType(point.type), this.#destinationModel.getDestinationByName(point.destination.name));
     this.#pointPresenter.set(point.id, pointPresenter);
   };
 
@@ -122,7 +122,7 @@ export default class BoardPresenter {
     this.#buttonComponent.addEventListener('click', () =>
       render(formComponent, this.#pointsListComponent.element, RenderPosition.AFTERBEGIN));
 
-    const saveButton = formComponent.element.querySelector('.event__save-btn');
-    saveButton.addEventListener('click', () => formComponent.element.remove());
+    const saveButton = document.querySelector('.event__save-btn');
+    //saveButton.addEventListener('click', () => console.log(this.#points));
   };
 }

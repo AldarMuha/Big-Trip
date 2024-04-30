@@ -136,13 +136,13 @@ const createFormViewTemplate = ({ point, offers, destination }) => `
     </button>
     </header>
       <section class="event__details">
-        ${offers ? createFormOffersTemplate(point, offers) : ''}
+        ${(offers) ? createFormOffersTemplate(point.offers, offers) : ''}
 
         ${destination ? createFormDestinationTemplate(destination) : ''}
-      </section>
-    </form>
-  </li>
-`;
+      </section >
+    </form >
+  </li >
+  `;
 
 export default class FormView extends AbstractStatefulView {
 
@@ -222,7 +222,7 @@ export default class FormView extends AbstractStatefulView {
       this._state.point.type = evt.target.value;
       this.element.querySelector('.event__type-toggle').checked = false;
       this.element.querySelector('.event__label').textContent = this._state.point.type;
-      this.element.querySelector('.event__type-icon').src = `img/icons/${this._state.point.type}.png`;
+      this.element.querySelector('.event__type-icon').src = `img / icons / ${this._state.point.type}.png`;
       /*
       this._state.offers = this._state.point.offers.filter((pointOffer) => pointOffer.type === this._state.point.type);
       console.log(this._state.offers);
@@ -245,10 +245,6 @@ export default class FormView extends AbstractStatefulView {
     } else {
       currentOffers = currentOffers.filter((offer) => offer.title !== offerLabel);
     }
-
-    //this._state.offers.push(...currentOffers);
-    console.log(currentOffers);
-    console.log(this._state);
 
   };
 
