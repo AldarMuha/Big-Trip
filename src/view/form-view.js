@@ -232,20 +232,16 @@ export default class FormView extends AbstractStatefulView {
   };
 
   #handleChangeOffers = (evt) => {
-
     const checkbox = evt.target;
-    const offerLabel = checkbox.closest('.event__offer-selector').querySelector('.event__offer-title').textContent;
-    const offerPrice = checkbox.closest('.event__offer-selector').querySelector('.event__offer-price').textContent;
     const isSelected = checkbox.checked;
 
-    let currentOffers = Array.isArray(this._state.offers) ? [...this._state.offers] : [];
+    const currentOffers = this._state.point.offers;
 
     if (isSelected) {
-      currentOffers.push({ title: offerLabel, price: offerPrice });
+      currentOffers.push(Number(evt.target.dataset.id));
     } else {
-      currentOffers = currentOffers.filter((offer) => offer.title !== offerLabel);
+      this._state.point.offers = currentOffers.filter((offer) => offer !== Number(evt.target.dataset.id));
     }
-
   };
 
   _restoreHandlers = () => {

@@ -37,7 +37,7 @@ export const generatePoints = () => {
 
   return points.map((point) => ({
     id: nanoid(),
-    offers: getRandomArray(OffersByType.find((offers) => offers.type === point.type).offers.map((offer) => offer.id)),
+    offers: Array.from(new Set(getRandomArray(OffersByType.find((offers) => offers.type === point.type).offers.map((offer) => offer.id)))),
     destination: getRandomValue(Destinations),
     ...point,
   }));
