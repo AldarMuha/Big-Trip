@@ -102,7 +102,7 @@ const createFormViewTemplate = ({ point, offers, destination }) => `
         ${point.type}
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text"
-        name="event-destination" value='${destination ? destination.name : ''}' list="destination-list-1">
+        name="event-destination" value='${point.destination ? point.destination.name : ''}' list="destination-list-1">
       <datalist id="destination-list-1">
         <option value="Amsterdam"></option>
         <option value="Geneva"></option>
@@ -138,7 +138,7 @@ const createFormViewTemplate = ({ point, offers, destination }) => `
       <section class="event__details">
         ${(offers) ? createFormOffersTemplate(point.offers, offers) : ''}
 
-        ${destination ? createFormDestinationTemplate(destination) : ''}
+        ${point.destination ? createFormDestinationTemplate(point.destination) : ''}
       </section >
     </form >
   </li >
@@ -222,13 +222,15 @@ export default class FormView extends AbstractStatefulView {
       this._state.point.type = evt.target.value;
       this.element.querySelector('.event__type-toggle').checked = false;
       this.element.querySelector('.event__label').textContent = this._state.point.type;
-      this.element.querySelector('.event__type-icon').src = `img / icons / ${this._state.point.type}.png`;
+      this.element.querySelector('.event__type-icon').src = `img/icons/${this._state.point.type}.png`;
       /*
       this._state.offers = this._state.point.offers.filter((pointOffer) => pointOffer.type === this._state.point.type);
       console.log(this._state.offers);
       */
     });
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#handleChangeOffers);
+
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#handleChangeDestination);
   };
 
   #handleChangeOffers = (evt) => {
@@ -257,6 +259,15 @@ export default class FormView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(FormView.parseStateToPoint(this._state));
+  };
+
+  #handleChangeDestination = (evt) => {
+    if (this._state.destination.some((destinationItem) => destinationItem.name === evt.target.value)) {
+      this._state.point.destination = this._state.destination.find((destinationItem) => destinationItem.name === evt.target.value);
+      this.element.querySelector('.event__section-title--destination').textContent = this._state.point.destination.name;
+      this.element.querySelector('.event__destination-description').textContent = this._state.point.destination.description;
+      this.element.querySelector('.event__photos-tape').innerHTML = this._state.point.destination.pictures.slice().map((picture) => `<img class="event__photo" src=${picture.src} alt=${picture.description}>`).join('');
+    }
   };
 
 }

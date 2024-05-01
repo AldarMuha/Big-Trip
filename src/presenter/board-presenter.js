@@ -49,7 +49,7 @@ export default class BoardPresenter {
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
     //this.#sourcedPoints = updatedPoint(this.#sourcedPoints, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offersModel.getOffersByType(updatedPoint.type), this.#destinationModel.getDestinationByName(updatedPoint.destination.name));
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#offersModel.getOffersByType(updatedPoint.type), this.#destinationModel.get());
   };
 
   #sortPoints = (sortType) => {
@@ -113,7 +113,7 @@ export default class BoardPresenter {
 
   #renderPoint = (point) => {
     const pointPresenter = new PointPresenter(this.#pointsListComponent.element, this.#handlePointChange, this.#handleModeChange);
-    pointPresenter.init(point, this.#offersModel.getOffersByType(point.type), this.#destinationModel.getDestinationByName(point.destination.name));
+    pointPresenter.init(point, this.#offersModel.getOffersByType(point.type), this.#destinationModel.get());
     this.#pointPresenter.set(point.id, pointPresenter);
   };
 
