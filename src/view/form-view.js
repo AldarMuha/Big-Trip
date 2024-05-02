@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDueDate } from '../util.js';
 
-import { createFormOffersTemplate } from './form-offers-template.js';
+import { createFormOffersTemplate, createFormOfferTemplate } from './form-offers-template.js';
 import { createFormDestinationTemplate } from './form-destination-template.js';
 
 import flatpickr from 'flatpickr';
@@ -136,7 +136,7 @@ const createFormViewTemplate = ({ point, offers, destination }) => `
     </button>
     </header>
       <section class="event__details">
-        ${(offers) ? createFormOffersTemplate(point.offers, offers) : ''}
+        ${(offers) ? createFormOffersTemplate(point.type, point.offers, offers) : ''}
 
         ${point.destination ? createFormDestinationTemplate(point.destination) : ''}
       </section >
@@ -217,32 +217,22 @@ export default class FormView extends AbstractStatefulView {
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
-    this.element.querySelector('fieldset.event__type-group').addEventListener('change', (evt) => {
-      this._state.point.type = evt.target.value;
-      this.element.querySelector('.event__type-toggle').checked = false;
-      this.element.querySelector('.event__label').textContent = this._state.point.type;
-      this.element.querySelector('.event__type-icon').src = `img/icons/${this._state.point.type}.png`;
-      /*
-      this._state.offers = this._state.point.offers.filter((pointOffer) => pointOffer.type === this._state.point.type);
-      console.log(this._state.offers);
-      */
-    });
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#handleChangeOffers);
 
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+    this.element.querySelector('fieldset.event__type-group').addEventListener('change', this.#handleChangeType);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#handleChangeOffers);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#handleChangeDestination);
   };
 
   #handleChangeOffers = (evt) => {
     const checkbox = evt.target;
     const isSelected = checkbox.checked;
-
     const currentOffers = this._state.point.offers;
 
     if (isSelected) {
-      currentOffers.push(Number(evt.target.dataset.id));
+      currentOffers.push(evt.target.dataset.id);
     } else {
-      this._state.point.offers = currentOffers.filter((offer) => offer !== Number(evt.target.dataset.id));
+      this._state.point.offers = currentOffers.filter((offer) => offer !== evt.target.dataset.id);
     }
   };
 
@@ -259,6 +249,15 @@ export default class FormView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(FormView.parseStateToPoint(this._state));
+  };
+
+  #handleChangeType = (evt) => {
+    this._state.point.type = evt.target.value;
+    this.element.querySelector('.event__type-toggle').checked = false;
+    this.element.querySelector('.event__label').textContent = this._state.point.type;
+    this.element.querySelector('.event__type-icon').src = `img/icons/${this._state.point.type}.png`;
+
+    this.element.querySelector('.event__available-offers').innerHTML = this._state.offers.find((offer) => offer.type === this._state.point.type).offers.map((offer) => createFormOfferTemplate(this._state.point.offers, offer)).join('');
   };
 
   #handleChangeDestination = (evt) => {
