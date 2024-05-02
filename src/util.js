@@ -34,12 +34,22 @@ const getTimeDueDate = (dueDate) => dayjs(dueDate).format('HH:mm');
 const differenceDate = (date1, date2) => {
   const dateFrom = dayjs(date1);
   const dateTo = dayjs(date2);
+  //et dayDiff = dateTo.diff(dateFrom);
+  let dayDiff = 0;
+  let hourDiff = 0;
+  let minuteDiff = 0;
   if (dateTo.diff(dateFrom, 'day') >= 1) {
-    return dayjs(dateTo.diff(dateFrom, 'day', true)).format('DD HHН mmМ');
+    dayDiff = dateTo.diff(dateFrom, 'day');
+    hourDiff = dateTo.diff(dateFrom, 'hour');
+    minuteDiff = dateTo.diff(dateFrom, 'minute');
+    return `${dayDiff}D ${hourDiff - dayDiff * 24}H ${minuteDiff - hourDiff * 60}M`;
   } if (dateTo.diff(dateFrom, 'hour') >= 1) {
-    return dayjs(dateTo.diff(dateFrom, 'hour', true)).format('HHН mmМ');
-  } if (dateTo.diff(dateFrom, 'minute') >= 1) {
-    return dayjs(dateTo.diff(dateFrom, 'minute', true)).format('mmМ');
+    hourDiff = dateTo.diff(dateFrom, 'hour');
+    minuteDiff = dateTo.diff(dateFrom, 'minute');
+    return `${hourDiff}H ${minuteDiff - hourDiff * 60}M`;
+  } else {
+    minuteDiff = dateTo.diff(dateFrom, 'minute');
+    return `${minuteDiff}M`;
   }
 };
 

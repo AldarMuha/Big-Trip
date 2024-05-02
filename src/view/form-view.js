@@ -17,7 +17,7 @@ const BLANK_POINT = {
   type: ''
 };
 
-const createFormViewTemplate = ({ point, offers, destination }) => `
+const createFormViewTemplate = ({ point, offers }) => `
 <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -171,10 +171,12 @@ export default class FormView extends AbstractStatefulView {
 
   #dateFromChangeHandler = ([userDate]) => {
     this._state.point.dateFrom = userDate;
+    this.#setDatepicker();
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this._state.point.dateTo = userDate;
+    this.#setDatepicker();
   };
 
   #setDatepicker = () => {
@@ -182,6 +184,8 @@ export default class FormView extends AbstractStatefulView {
       this.#datepickerFrom = flatpickr(
         this.element.querySelector('[name="event-start-time"]'),
         {
+          maxDate: this._state.point.dateTo,
+          enableTime: true,
           dateFormat: 'y/m/d H:i',
           defaultDate: this._state.point.dateFrom,
           onChange: this.#dateFromChangeHandler, // На событие flatpickr передаём наш колбэк
@@ -192,6 +196,8 @@ export default class FormView extends AbstractStatefulView {
       this.#datepickerTo = flatpickr(
         this.element.querySelector('[name="event-end-time"]'),
         {
+          minDate: this._state.point.dateFrom,
+          enableTime: true,
           dateFormat: 'y/m/d H:i',
           defaultDate: this._state.point.dateTo,
           onChange: this.#dateToChangeHandler,
@@ -238,6 +244,7 @@ export default class FormView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     this.#formSubmitHandler(this._callback.formSubmit);
+    this.#setDatepicker();
   };
 
   #priceInputHandler = (evt) => {
