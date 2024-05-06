@@ -7,7 +7,15 @@ import DestinationModel from './model/destination-model.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import { render } from './framework/render.js';
 
-const tripPresenter = new BoardPresenter();
+import FilterModel from './model/filter-model.js';
+
+const filters = [
+  {
+    type: 'everything',
+    name: 'EVERYTHING',
+    count: 0,
+  },
+];
 
 const filterContainer = document.querySelector('.trip-controls__filters');
 const eventsContainer = document.querySelector('main .page-body__container');
@@ -16,9 +24,11 @@ const pointsModel = new PointsModel();
 const offersModel = new OffersModel();
 const destinationModel = new DestinationModel();
 
-console.log(pointsModel.points);
+const filterModel = new FilterModel();
 
+const tripPresenter = new BoardPresenter(eventsContainer, pointsModel, offersModel, destinationModel);
 
-render(new FilterView(generateFilter(pointsModel.points)), filterContainer);
+//render(new FilterView(generateFilter(pointsModel.points)), filterContainer);
+render(new FilterView(filters, 'everything'), filterContainer);
 
-tripPresenter.init(eventsContainer, pointsModel, offersModel, destinationModel);
+tripPresenter.init();

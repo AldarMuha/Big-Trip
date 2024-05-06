@@ -34,7 +34,6 @@ const getTimeDueDate = (dueDate) => dayjs(dueDate).format('HH:mm');
 const differenceDate = (date1, date2) => {
   const dateFrom = dayjs(date1);
   const dateTo = dayjs(date2);
-  //et dayDiff = dateTo.diff(dateFrom);
   let dayDiff = 0;
   let hourDiff = 0;
   let minuteDiff = 0;
@@ -54,21 +53,6 @@ const differenceDate = (date1, date2) => {
 };
 
 const getDueDate = (dueDate) => dayjs.utc(dueDate).utcOffset(3, true).format('YY/MM/DD HH:mm');
-
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 
 const sortDay = (pointA, pointB) =>
   dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
@@ -95,4 +79,4 @@ function sortPrice(a, b) {
   return 0;
 }
 
-export { getRandomInteger, getRandomValue, getDayMonth, getTimeDueDate, differenceDate, getDueDate, getRandomArray, updateItem, sortDay, sortTime, sortPrice };
+export { getRandomInteger, getRandomValue, getDayMonth, getTimeDueDate, differenceDate, getDueDate, getRandomArray, sortDay, sortTime, sortPrice };

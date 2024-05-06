@@ -242,6 +242,12 @@ export default class FormView extends AbstractStatefulView {
     }
   };
 
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+  };
+
   _restoreHandlers = () => {
     this.#formSubmitHandler(this._callback.formSubmit);
     this.#setDatepicker();
@@ -274,6 +280,11 @@ export default class FormView extends AbstractStatefulView {
       this.element.querySelector('.event__destination-description').textContent = this._state.point.destination.description;
       this.element.querySelector('.event__photos-tape').innerHTML = this._state.point.destination.pictures.slice().map((picture) => `<img class="event__photo" src=${picture.src} alt=${picture.description}>`).join('');
     }
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(FormView.parseStateToPoint(this._state));
   };
 
 }
