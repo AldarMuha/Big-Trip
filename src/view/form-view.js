@@ -244,12 +244,12 @@ export default class FormView extends AbstractStatefulView {
 
   setDeleteClickHandler = (callback) => {
     this._callback.deleteClick = callback;
-
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
   };
 
   _restoreHandlers = () => {
-    this.#formSubmitHandler(this._callback.formSubmit);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
     this.#setDatepicker();
   };
 
