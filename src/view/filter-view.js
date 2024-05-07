@@ -13,7 +13,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
         ${count === 0 ? 'disabled' : ''}
         value=${type}
       >
-      <label class="trip-filters__filter-label" for="filter-everything">${name}</label>
+      <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
     </div>
   `);
 };
@@ -51,5 +51,6 @@ export default class FilterView extends AbstractView {
   #filterTypeChangeHandler = (evt) => {
     evt.preventDefault();
     this._callback.filterTypeChange(evt.target.value);
+    console.log(evt.target.value);
   };
 }

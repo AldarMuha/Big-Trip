@@ -5,6 +5,7 @@ import NoPointsView from '../view/no-points-view.js';
 import BoardView from '../view/board-view.js';
 import PointPresenter from './point-presenter.js';
 import { SortType, UpdateType, UserAction } from '../const.js';
+import { filter } from '../utils/filter.js';
 
 
 import { remove, render, RenderPosition } from '../framework/render.js';
@@ -16,6 +17,7 @@ export default class BoardPresenter {
   #pointsModel = null;
   #offersModel = null;
   #destinationModel = null;
+  #filterModel = null;
 
   #sortComponent = null;
   #pointsListComponent = new PointsListView();
@@ -25,24 +27,31 @@ export default class BoardPresenter {
   #pointPresenter = new Map();
   #currentSortType = SortType.DAY;
 
-  constructor(container, pointsModel, offersModel, destinationModel) {
+  constructor(container, pointsModel, offersModel, destinationModel, filterModel) {
     this.#container = container;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationModel = destinationModel;
+    this.#filterModel = filterModel;
+
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    const filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[filterType](points);
+
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return [...this.#pointsModel.points].sort(sortDay);
+        return filteredPoints.sort(sortDay);
       case SortType.TIME:
-        return [...this.#pointsModel.points].sort(sortTime);
+        return filteredPoints.sort(sortTime);
       case SortType.PRICE:
-        return [...this.#pointsModel.points].sort(sortPrice);
+        return filteredPoints.sort(sortPrice);
     }
-    return this.#pointsModel.points;
+    return filteredPoints;
   }
 
   init = () => {
@@ -79,7 +88,7 @@ export default class BoardPresenter {
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        this.#clearBoard(resetSortType = true);
+        this.#clearBoard();
         this.#renderBoard();
         break;
     }

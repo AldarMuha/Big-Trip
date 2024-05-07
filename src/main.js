@@ -1,14 +1,14 @@
 //import ButtonNewEventView from './view/button-new-event-view.js';
 import FilterView from './view/filter-view.js';
-import { generateFilter } from './mock/filter.js';
+//import { generateFilter } from './mock/filter.js';
 import PointsModel from './model/points-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationModel from './model/destination-model.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import { render } from './framework/render.js';
 
+import FilterPresenter from './presenter/filter-presenter.js';
 import FilterModel from './model/filter-model.js';
-
 const filters = [
   {
     type: 'everything',
@@ -26,9 +26,9 @@ const destinationModel = new DestinationModel();
 
 const filterModel = new FilterModel();
 
-const tripPresenter = new BoardPresenter(eventsContainer, pointsModel, offersModel, destinationModel);
+const tripPresenter = new BoardPresenter(eventsContainer, pointsModel, offersModel, destinationModel, filterModel);
+const filterPresenter = new FilterPresenter(filterContainer, filterModel, pointsModel);
 
-//render(new FilterView(generateFilter(pointsModel.points)), filterContainer);
-render(new FilterView(filters, 'everything'), filterContainer);
-
+//render(new FilterView(filters, 'everything'), filterContainer);
+filterPresenter.init();
 tripPresenter.init();
