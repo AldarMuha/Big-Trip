@@ -26,6 +26,7 @@
     "eslint": "8.13.0",
     "eslint-config-htmlacademy": "5.1.2",
     "flatpickr": "4.6.13",
+    "he": "1.2.0",
     "nanoid": "5.0.7",
     "style-loader": "4.0.0",
     "timezone": "1.0.23",

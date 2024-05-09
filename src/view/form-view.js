@@ -1,5 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDueDate } from '../util.js';
+import he from 'he';
 
 import { createFormOffersTemplate, createFormOfferTemplate } from './form-offers-template.js';
 import { createFormDestinationTemplate } from './form-destination-template.js';
@@ -9,12 +10,12 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
   destination: '',
-  offers: '',
-  basePrice: '',
-  dateFrom: '',
-  dateTo: '',
+  offers: [],
+  basePrice: '120',
+  dateFrom: '2023-11-18T14:30:45.123Z',
+  dateTo: '2023-11-18T16:30:45.123Z',
   isFavorite: false,
-  type: ''
+  type: 'taxi'
 };
 
 const createFormViewTemplate = ({ point, offers }) => `
@@ -125,7 +126,7 @@ const createFormViewTemplate = ({ point, offers }) => `
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price"
+      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price"
         value=${point.basePrice}>
     </div>
 
@@ -138,7 +139,7 @@ const createFormViewTemplate = ({ point, offers }) => `
       <section class="event__details">
         ${(offers) ? createFormOffersTemplate(point.type, point.offers, offers) : ''}
 
-        ${point.destination ? createFormDestinationTemplate(point.destination) : ''}
+        <section class="event__section  event__section--destination"> ${point.destination ? createFormDestinationTemplate(point.destination) : ''}</section>
       </section >
     </form >
   </li >
@@ -149,10 +150,10 @@ export default class FormView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor(point = BLANK_POINT, offers = null, destination = null) {
+  constructor(offers, destination, point = BLANK_POINT) {
     super();
     this._state = FormView.parsePointToState(point, offers, destination);
-    this.#setDatepicker();
+    this.setDatepicker();
   }
 
   removeElement = () => {
@@ -171,15 +172,15 @@ export default class FormView extends AbstractStatefulView {
 
   #dateFromChangeHandler = ([userDate]) => {
     this._state.point.dateFrom = userDate;
-    this.#setDatepicker();
+    this.setDatepicker();
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this._state.point.dateTo = userDate;
-    this.#setDatepicker();
+    this.setDatepicker();
   };
 
-  #setDatepicker = () => {
+  setDatepicker = () => {
     if (this._state.point.dateFrom) {
       this.#datepickerFrom = flatpickr(
         this.element.querySelector('[name="event-start-time"]'),
@@ -226,8 +227,8 @@ export default class FormView extends AbstractStatefulView {
 
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('fieldset.event__type-group').addEventListener('change', this.#handleChangeType);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#handleChangeOffers);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#handleChangeDestination);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#handleChangeOffers);
   };
 
   #handleChangeOffers = (evt) => {
@@ -250,13 +251,13 @@ export default class FormView extends AbstractStatefulView {
   _restoreHandlers = () => {
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
-    this.#setDatepicker();
+    this.setDatepicker();
   };
 
   #priceInputHandler = (evt) => {
     evt.preventDefault();
     this._state.point.basePrice = Number(evt.target.value);
-    this.#setDatepicker();
+    this.setDatepicker();
   };
 
   #formSubmitHandler = (evt) => {
@@ -276,9 +277,9 @@ export default class FormView extends AbstractStatefulView {
   #handleChangeDestination = (evt) => {
     if (this._state.destination.some((destinationItem) => destinationItem.name === evt.target.value)) {
       this._state.point.destination = this._state.destination.find((destinationItem) => destinationItem.name === evt.target.value);
-      this.element.querySelector('.event__section-title--destination').textContent = this._state.point.destination.name;
-      this.element.querySelector('.event__destination-description').textContent = this._state.point.destination.description;
-      this.element.querySelector('.event__photos-tape').innerHTML = this._state.point.destination.pictures.slice().map((picture) => `<img class="event__photo" src=${picture.src} alt=${picture.description}>`).join('');
+      this.element.querySelector('.event__section--destination').innerHTML = createFormDestinationTemplate(this._state.point.destination);
+    } else {
+      this._state.point.destination = { name: he.encode(evt.target.value) };
     }
   };
 

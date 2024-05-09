@@ -1,6 +1,6 @@
 import { Destinations } from '../mock/destination.js';
 
-export default class DestinationModel {
+export default class DestinationsModel {
   #destinations = Destinations;
 
   get = () => this.#destinations;

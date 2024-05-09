@@ -17,7 +17,7 @@ export default class PointPresenter {
 
   #point = null;
   #offers = null;
-  #destination = null;
+  #destinations = null;
   #mode = Mode.DEFAULT;
 
   constructor(pointListContainer, changeData, changeMode) {
@@ -26,20 +26,20 @@ export default class PointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (point, offers, destination) => {
+  init = (point, offers, destinations) => {
     this.#point = point;
     this.#offers = offers;
-    this.#destination = destination;
+    this.#destinations = destinations;
 
     const prevPointComponent = this.#pointComponent;
     const prevFormComponent = this.#formComponent;
 
-    this.#pointComponent = new PointView(this.#point, this.#offers, this.#destination);
-    this.#formComponent = new FormView(this.#point, this.#offers, this.#destination);
+    this.#pointComponent = new PointView(this.#point, this.#offers, this.#destinations);
+    this.#formComponent = new FormView(this.#offers, this.#destinations, this.#point);
 
     this.#pointComponent.setEditClickHandler(this.#editClickHandler);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#formComponent.setFormSubmitHandler(this.#formSubmitHandler);
+    this.#formComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#formComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevPointComponent === null || prevFormComponent === null) {
@@ -102,7 +102,7 @@ export default class PointPresenter {
     );
   };
 
-  #formSubmitHandler = (update) => {
+  #handleFormSubmit = (update) => {
     this.#changeData(
       UserAction.UPDATE_POINT,
       UpdateType.MINOR,
