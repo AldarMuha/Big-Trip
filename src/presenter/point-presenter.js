@@ -1,6 +1,7 @@
 import { render, replace, remove } from '../framework/render.js';
 import PointView from '../view/point-view.js';
 import FormView from '../view/form-view.js';
+import { UserAction, UpdateType } from '../const.js';
 
 const Mode = {
   DEFAULT: 'default',
@@ -16,7 +17,7 @@ export default class PointPresenter {
 
   #point = null;
   #offers = null;
-  #destination = null;
+  #destinations = null;
   #mode = Mode.DEFAULT;
 
   constructor(pointListContainer, changeData, changeMode) {
@@ -25,20 +26,21 @@ export default class PointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (point, offers, destination) => {
+  init = (point, offers, destinations) => {
     this.#point = point;
     this.#offers = offers;
-    this.#destination = destination;
+    this.#destinations = destinations;
 
     const prevPointComponent = this.#pointComponent;
     const prevFormComponent = this.#formComponent;
 
-    this.#pointComponent = new PointView(this.#point, this.#offers, this.#destination);
-    this.#formComponent = new FormView(this.#point, this.#offers, this.#destination);
+    this.#pointComponent = new PointView(this.#point, this.#offers, this.#destinations);
+    this.#formComponent = new FormView(this.#offers, this.#destinations, this.#point);
 
     this.#pointComponent.setEditClickHandler(this.#editClickHandler);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#formComponent.setFormSubmitHandler(this.#formSubmitHandler);
+    this.#formComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#formComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevPointComponent === null || prevFormComponent === null) {
       render(this.#pointComponent, this.#pointListContainer);
@@ -93,12 +95,28 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      { ...this.#point, isFavorite: !this.#point.isFavorite },
+    );
   };
 
-  #formSubmitHandler = (point) => {
-    this.#changeData(point);
+  #handleFormSubmit = (update) => {
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      update,
+    );
     this.#replaceFormToPoint();
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 }
 

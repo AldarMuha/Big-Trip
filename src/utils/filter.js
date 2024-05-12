@@ -1,7 +1,7 @@
 import { FilterType } from '../const.js';
 import dayjs from 'dayjs';
-const utc = require('dayjs/plugin/utc');
-const timezone = require('dayjs/plugin/timezone');
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 const currentDate = dayjs();
 
 dayjs.extend(utc);
