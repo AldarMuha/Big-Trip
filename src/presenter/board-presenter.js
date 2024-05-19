@@ -1,6 +1,7 @@
 import SortView from '../view/sort-view.js';
 import PointsListView from '../view/points-list-view.js';
 import NoPointsView from '../view/no-points-view.js';
+import LoadingView from '../view/loading-view.js';
 import BoardView from '../view/board-view.js';
 import PointPresenter from './point-presenter.js';
 import { FilterType, SortType, UpdateType, UserAction } from '../const.js';
@@ -20,9 +21,11 @@ export default class BoardPresenter {
   #pointsListComponent = new PointsListView();
   #noPointsComponent = new NoPointsView();
   #boardComponent = new BoardView();
+  #loadingComponent = new LoadingView();
   #pointPresenter = new Map();
   #pointNewPresenter = null;
   #currentSortType = SortType.DAY;
+  #isLoading = true;
 
   constructor(container, pointsModel, offersModel, destinationsModel, filterModel) {
     this.#container = container;
@@ -37,10 +40,12 @@ export default class BoardPresenter {
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
-  createPoint = (callback) => {
+  createPoint = async (callback) => {
+    const offers = await this.#offersModel.get();
+    const destinations = await this.#destinationsModel.get();
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init(this.#offersModel.get(), this.#destinationsModel.get(), callback);
+    this.#pointNewPresenter.init(offers, destinations, callback);
   };
 
   get points() {
@@ -96,6 +101,11 @@ export default class BoardPresenter {
         this.#clearBoard();
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
     }
   };
 
@@ -114,8 +124,14 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   };
 
-  #renderPoints = (points) => {
-    points.forEach((point) => this.#renderPoint(point));
+  #renderPoints = async (points) => {
+    const offers = await this.#offersModel.get();
+    const destinations = await this.#destinationsModel.get();
+    points.forEach((point) => this.#renderPoint(point, offers, destinations));
+  };
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   };
 
   #renderNoPoints = () => {
@@ -129,6 +145,7 @@ export default class BoardPresenter {
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#noPointsComponent);
 
     if (resetSortType) {
@@ -137,9 +154,15 @@ export default class BoardPresenter {
   };
 
   #renderBoard = () => {
+    render(this.#boardComponent, this.#container);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const points = this.points;
     const pointCount = points.length;
-    render(this.#boardComponent, this.#container);
 
     if (pointCount === 0) {
       this.#renderNoPoints();
@@ -151,9 +174,9 @@ export default class BoardPresenter {
     this.#renderPoints(points);
   };
 
-  #renderPoint = (point) => {
+  #renderPoint = (point, offers, destinations) => {
     const pointPresenter = new PointPresenter(this.#pointsListComponent.element, this.#handleViewAction, this.#handleModeChange);
-    pointPresenter.init(point, this.#offersModel.get(), this.#destinationsModel.get());
+    pointPresenter.init(point, offers, destinations);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
 

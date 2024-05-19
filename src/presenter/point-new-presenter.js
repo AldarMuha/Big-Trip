@@ -1,6 +1,5 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
 import FormView from '../view/form-view.js';
-import { nanoid } from 'nanoid';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class PointNewPresenter {
@@ -8,7 +7,6 @@ export default class PointNewPresenter {
   #changeData = null;
   #formComponent = null;
   #destroyCallback = null;
-
   #offers = null;
   #destinations = null;
 
@@ -27,7 +25,6 @@ export default class PointNewPresenter {
     }
 
     this.#formComponent = new FormView(this.#offers, this.#destinations);
-
     this.#formComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#formComponent.setDeleteClickHandler(this.#handleDeleteClick);
     render(this.#formComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
@@ -50,7 +47,7 @@ export default class PointNewPresenter {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      { id: nanoid(), ...point },
+      point,
     );
     this.destroy();
   };

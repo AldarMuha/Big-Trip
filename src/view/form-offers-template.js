@@ -10,12 +10,10 @@ export const createFormOfferTemplate = (pointOffers, offer) => `
   </div>
 `;
 
-
-export const createFormOffersTemplate = (pointType, pointOffers, offers) =>
-  `<section class="event__section  event__section--offers">
+export const createFormOffersTemplate = (point, offers) =>
+  `
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
     <div class="event__available-offers">
-      ${offers.find((offer) => offer.type === pointType).offers.map((offer) => createFormOfferTemplate(pointOffers, offer)).join('')}
+      ${offers.find((offer) => offer.type === point.type).offers.map((offer) => createFormOfferTemplate(point.offers, offer)).join('')}
     </div>
-</section>`;
+`;

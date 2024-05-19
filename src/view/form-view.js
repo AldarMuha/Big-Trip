@@ -18,7 +18,7 @@ const BLANK_POINT = {
   type: 'taxi'
 };
 
-const createFormViewTemplate = ({ point, offers }) => `
+const createFormViewTemplate = ({ point }, offers) => `
 <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -137,8 +137,9 @@ const createFormViewTemplate = ({ point, offers }) => `
     </button>
     </header>
       <section class="event__details">
-        ${(offers) ? createFormOffersTemplate(point.type, point.offers, offers) : ''}
-
+      <section class="event__section  event__section--offers">
+      ${(offers.find((offer) => offer.type === point.type).offers.length > 0) ? createFormOffersTemplate(point, offers) : ''}
+      </section>
         <section class="event__section  event__section--destination"> ${point.destination ? createFormDestinationTemplate(point.destination) : ''}</section>
       </section >
     </form >
@@ -149,10 +150,14 @@ export default class FormView extends AbstractStatefulView {
 
   #datepickerFrom = null;
   #datepickerTo = null;
+  #offers = [];
+  #destinations = [];
 
-  constructor(offers, destination, point = BLANK_POINT) {
+  constructor(offers = [], destinations = [], point = BLANK_POINT) {
     super();
-    this._state = FormView.parsePointToState(point, offers, destination);
+    this._state = FormView.parsePointToState(Object.assign({}, point));
+    this.#offers = offers;
+    this.#destinations = destinations;
     this.setDatepicker();
   }
 
@@ -207,10 +212,8 @@ export default class FormView extends AbstractStatefulView {
     }
   };
 
-  static parsePointToState = (point, offers, destination) => ({
+  static parsePointToState = (point) => ({
     point,
-    offers,
-    destination,
   });
 
   static parseStateToPoint = (state) => ({
@@ -218,7 +221,7 @@ export default class FormView extends AbstractStatefulView {
   });
 
   get template() {
-    return createFormViewTemplate(this._state);
+    return createFormViewTemplate(this._state, this.#offers);
   }
 
   setFormSubmitHandler = (callback) => {
@@ -228,18 +231,17 @@ export default class FormView extends AbstractStatefulView {
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
     this.element.querySelector('fieldset.event__type-group').addEventListener('change', this.#handleChangeType);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#handleChangeDestination);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#handleChangeOffers);
+    this.element.querySelector('.event__section--offers').addEventListener('change', this.#handleChangeOffers);
   };
 
   #handleChangeOffers = (evt) => {
     const checkbox = evt.target;
     const isSelected = checkbox.checked;
     const currentOffers = this._state.point.offers;
-
     if (isSelected) {
-      currentOffers.push(evt.target.dataset.id);
+      currentOffers.push(Number(evt.target.dataset.id));
     } else {
-      this._state.point.offers = currentOffers.filter((offer) => offer !== evt.target.dataset.id);
+      this._state.point.offers = currentOffers.filter((offer) => offer !== Number(evt.target.dataset.id));
     }
   };
 
@@ -266,17 +268,23 @@ export default class FormView extends AbstractStatefulView {
   };
 
   #handleChangeType = (evt) => {
+    const offers = this.#offers.find((offer) => offer.type === this._state.point.type).offers;
     this._state.point.type = evt.target.value;
     this.element.querySelector('.event__type-toggle').checked = false;
     this.element.querySelector('.event__label').textContent = this._state.point.type;
     this.element.querySelector('.event__type-icon').src = `img/icons/${this._state.point.type}.png`;
-
-    this.element.querySelector('.event__available-offers').innerHTML = this._state.offers.find((offer) => offer.type === this._state.point.type).offers.map((offer) => createFormOfferTemplate(this._state.point.offers, offer)).join('');
+    this._state.point.offers = [];
+    this.element.querySelector('.event__section--offers').innerHTML = (offers.length > 0)
+      ? `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+         ${offers.map((offer) => createFormOfferTemplate(this._state.point.offers, offer)).join('')}
+        </div>`
+      : '';
   };
 
   #handleChangeDestination = (evt) => {
-    if (this._state.destination.some((destinationItem) => destinationItem.name === evt.target.value)) {
-      this._state.point.destination = this._state.destination.find((destinationItem) => destinationItem.name === evt.target.value);
+    if (this.#destinations.some((destination) => destination.name === evt.target.value)) {
+      this._state.point.destination = this.#destinations.find((destination) => destination.name === evt.target.value);
       this.element.querySelector('.event__section--destination').innerHTML = createFormDestinationTemplate(this._state.point.destination);
     } else {
       this._state.point.destination = { name: he.encode(evt.target.value) };
