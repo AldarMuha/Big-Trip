@@ -1,6 +1,7 @@
-const createPicture = ({ src, description }) => `
-  <img class="event__photo" src=${src} alt=${description}>
-`;
+const createPicture = ({ src, description }) => {
+  const newSrc = src.replace('http://picsum.photos', 'https://loremflickr.com');
+  return `<img class="event__photo" src="${newSrc}" alt=${description}>`;
+};
 
 export const createFormDestinationTemplate = ({ description, name, pictures }) =>
   (description, name, pictures) ?
@@ -9,7 +10,7 @@ export const createFormDestinationTemplate = ({ description, name, pictures }) =
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          ${pictures.map((picture) => createPicture(picture))}
+          ${pictures.map((picture) => createPicture(picture)).join('')}
         </div>
       </div>
   ` : '';

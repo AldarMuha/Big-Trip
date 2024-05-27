@@ -9,25 +9,26 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
-  destination: '',
+  destination: { name: '', description: '', pictures: [] },
   offers: [],
-  basePrice: '120',
+  basePrice: 120,
   dateFrom: '2023-11-18T14:30:45.123Z',
   dateTo: '2023-11-18T16:30:45.123Z',
   isFavorite: false,
   type: 'taxi'
 };
 
-const createFormViewTemplate = ({ point }, offers) => `
-<li class="trip-events__item">
-<form class="event event--edit" action="#" method="post">
-  <header class="event__header">
+const createFormViewTemplate = ({ point, isDisabled, isSaving, isDeleting }, offers) => {
+  const isSubmitDisabled = (point.destination.name === '' || point.basePrice === '' || point.dateFrom === null || point.dateTo === null);
+  return `<li class="trip-events__item">
+  <form class="event event--edit" action="#" method="post">
+    <header class="event__header">
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
         ${(point.type)
-    ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${point.type}.png" alt="Event type icon">`
-    : ''}
+      ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${point.type}.png" alt="Event type icon">`
+      : ''}
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -103,7 +104,7 @@ const createFormViewTemplate = ({ point }, offers) => `
         ${point.type}
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text"
-        name="event-destination" value='${point.destination ? point.destination.name : ''}' list="destination-list-1">
+        name="event-destination" value='${point.destination.name}' list="destination-list-1">
       <datalist id="destination-list-1">
         <option value="Amsterdam"></option>
         <option value="Geneva"></option>
@@ -127,11 +128,12 @@ const createFormViewTemplate = ({ point }, offers) => `
         &euro;
       </label>
       <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price"
-        value=${point.basePrice}>
+        value=${point.basePrice} ${isDisabled ? 'disabled' : ''}>
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Delete</button>
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled || isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+    <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+
     <button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>
     </button>
@@ -140,11 +142,12 @@ const createFormViewTemplate = ({ point }, offers) => `
       <section class="event__section  event__section--offers">
       ${(offers.find((offer) => offer.type === point.type).offers.length > 0) ? createFormOffersTemplate(point, offers) : ''}
       </section>
-        <section class="event__section  event__section--destination"> ${point.destination ? createFormDestinationTemplate(point.destination) : ''}</section>
+        <section class="event__section  event__section--destination"> ${createFormDestinationTemplate(point.destination)}</section>
       </section >
     </form >
   </li >
-  `;
+`;
+};
 
 export default class FormView extends AbstractStatefulView {
 
@@ -214,11 +217,20 @@ export default class FormView extends AbstractStatefulView {
 
   static parsePointToState = (point) => ({
     point,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   });
 
-  static parseStateToPoint = (state) => ({
-    ...state.point,
-  });
+  static parseStateToPoint = (state) => {
+    const point = { ...state.point };
+
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+
+    return point;
+  };
 
   get template() {
     return createFormViewTemplate(this._state, this.#offers);
@@ -287,7 +299,7 @@ export default class FormView extends AbstractStatefulView {
       this._state.point.destination = this.#destinations.find((destination) => destination.name === evt.target.value);
       this.element.querySelector('.event__section--destination').innerHTML = createFormDestinationTemplate(this._state.point.destination);
     } else {
-      this._state.point.destination = { name: he.encode(evt.target.value) };
+      this._state.point.destination = { name: he.encode(evt.target.value), description: '', pictures: [] };
     }
   };
 

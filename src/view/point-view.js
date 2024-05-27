@@ -1,8 +1,8 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { creatPointOffersTemplate } from './point-offers-template.js';
 import { getDayMonth, getTimeDueDate, differenceDate } from '../util.js';
 
-const createPointViewTemplate = (point, offers, destination) => `
+const createPointViewTemplate = (point, offers) => `
   <li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="2019-03-18">${getDayMonth(point.dateFrom)}</time>
@@ -25,7 +25,7 @@ const createPointViewTemplate = (point, offers, destination) => `
 
       ${offers ? creatPointOffersTemplate(point, offers) : ''}
 
-      <button class="event__favorite-btn event__favorite-btn--active" type="button">
+      <button class="event__favorite-btn ${point.isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
         <span class="visually-hidden">Add to favorite</span>
         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
         <path
@@ -39,7 +39,7 @@ const createPointViewTemplate = (point, offers, destination) => `
   </li>
 `;
 
-export default class PointView extends AbstractView {
+export default class PointView extends AbstractStatefulView {
   #point = null;
   #destination = null;
   #offers = null;
@@ -74,7 +74,5 @@ export default class PointView extends AbstractView {
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();
-    //console.log(this.#point);
-    // console.log(this.#offers);
   };
 }
