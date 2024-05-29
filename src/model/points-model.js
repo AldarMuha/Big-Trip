@@ -14,22 +14,21 @@ export default class PointsModel extends Observable {
     return this.#points;
   }
 
-  init = async () => {
+  async init() {
     try {
       const points = await this.#pointsApiService.points;
       this.#points = points.map(this.#adaptToClient);
-      console.log(this.#points);
     } catch (err) {
       this.#points = [];
     }
     this._notify(UpdateType.INIT);
-  };
+  }
 
   set points(points) {
     this.#points = points;
   }
 
-  updatePoint = async (updateType, update) => {
+  async updatePoint(updateType, update) {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
@@ -48,20 +47,20 @@ export default class PointsModel extends Observable {
     } catch (err) {
       throw new Error('Can\'t update point');
     }
-  };
+  }
 
-  addPoint = async (updateType, update) => {
+  async addPoint(updateType, update) {
     try {
       const response = await this.#pointsApiService.addPoint(update);
       const newPoint = this.#adaptToClient(response);
       this.#points = [newPoint, ...this.#points];
       this._notify(updateType, newPoint);
     } catch (err) {
-      throw new Error(err.message);
+      throw new Error('Can/t add point');
     }
-  };
+  }
 
-  deletePoint = async (updateType, update) => {
+  async deletePoint(updateType, update) {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
@@ -78,7 +77,7 @@ export default class PointsModel extends Observable {
     } catch (err) {
       throw new Error('Can\'t delete point');
     }
-  };
+  }
 
   #adaptToClient = (point) => {
     const adaptedPoint = {

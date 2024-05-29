@@ -31,7 +31,11 @@ export default class BoardPresenter {
   #pointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #isLoading = true;
-  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
+
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor(container, pointsModel, offersModel, destinationsModel, filterModel) {
     this.#container = container;
@@ -45,14 +49,6 @@ export default class BoardPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
-
-  createPoint = async (callback) => {
-    const offers = await this.#offersModel.get();
-    const destinations = await this.#destinationsModel.get();
-    this.#currentSortType = SortType.DAY;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init(offers, destinations, callback);
-  };
 
   get points() {
     const filterType = this.#filterModel.filter;
@@ -74,6 +70,14 @@ export default class BoardPresenter {
     this.#renderBoard();
   };
 
+  createPoint = async (callback) => {
+    const offers = await this.#offersModel.get();
+    const destinations = await this.#destinationsModel.get();
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#pointNewPresenter.init(offers, destinations, callback);
+  };
+
   #handleModeChange = () => {
     this.#pointNewPresenter.destroy();
     this.#pointPresenter.forEach((presenter) =>
@@ -88,7 +92,7 @@ export default class BoardPresenter {
         try {
           await this.#pointsModel.updatePoint(updateType, update);
         } catch (err) {
-          this.#pointsModel.get(update.id).setAborting();
+          this.#pointPresenter.get(update.id).setAborting();
         }
         break;
       case UserAction.ADD_POINT:
@@ -102,7 +106,7 @@ export default class BoardPresenter {
       case UserAction.DELETE_POINT:
         this.#pointPresenter.get(update.id).setDeleting();
         try {
-          this.#pointsModel.deletePoint(updateType, update);
+          await this.#pointsModel.deletePoint(updateType, update);
         } catch (err) {
           this.#pointsModel.get(update.id).setAborting();
         }
@@ -121,7 +125,7 @@ export default class BoardPresenter {
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        this.#clearBoard();
+        this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
       case UpdateType.INIT:
@@ -161,7 +165,7 @@ export default class BoardPresenter {
     render(this.#noPointsComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   };
 
-  #clearBoard = (resetSortType = false) => {
+  #clearBoard({ resetSortType = false } = {}) {
     this.#pointNewPresenter.destroy();
     this.#pointPresenter.forEach((presenter) =>
       presenter.destroy());
@@ -174,7 +178,7 @@ export default class BoardPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
     }
-  };
+  }
 
   #renderBoard = () => {
     render(this.#boardComponent, this.#container);
