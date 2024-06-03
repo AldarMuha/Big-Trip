@@ -144,7 +144,6 @@ export default class PointPresenter {
       UpdateType.MINOR,
       update,
     );
-    this.#replaceFormToPoint();
   };
 
   #handleDeleteClick = (point) => {

@@ -1,8 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDueDate } from '../util.js';
-import he from 'he';
+//import he from 'he';
 
-import { createFormOffersTemplate, createFormOfferTemplate } from './form-offers-template.js';
+import { createFormOffersTemplate } from './form-offers-template.js';
 import { createFormDestinationTemplate } from './form-destination-template.js';
 
 import flatpickr from 'flatpickr';
